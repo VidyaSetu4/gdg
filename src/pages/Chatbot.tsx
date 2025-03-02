@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
 import { Send, User, Bot, Paperclip, Mic, Image } from "lucide-react";
 
 const API_KEY = "AIzaSyAuoc6omPHCESF6nREp7L2sHnT1MK5s30k"; // Replace with your actual API key
@@ -11,7 +12,27 @@ const Chatbot = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = () =>{
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event : React.ChangeEvent<HTMLInputElement>)=>{
+    const file = event.target.files?.[0];
+    if(file){
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage(reader.result as string);
+
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
 
   // Scroll to bottom on new message
@@ -20,38 +41,59 @@ const Chatbot = () => {
   }, [messages]);
 
   // Function to send message to Gemini API
-  const fetchGeminiResponse = async (userInput: string) => {
+  const fetchGeminiResponse = async (userInput: string, imageData: string | null) => {
     try {
+      const requestData: any = {
+        contents: [{ parts: [] }]
+      };
+  
+      // Add text input if available
+      if (userInput) {
+        requestData.contents[0].parts.push({ text: userInput });
+      }
+  
+      // Add image input if available
+      if (imageData) {
+        requestData.contents[0].parts.push({
+          inline_data: {
+            mime_type: "image/png",  // Adjust based on the actual image type
+            data: imageData.split(",")[1],  // Extract base64 data
+          },
+        });
+      }
+  
+      // Send request to Gemini API
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`,
-        {
-          contents: [{ parts:[{ text: userInput }] }]
-        }
+        requestData
       );
-
+  
       return response.data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't process that.";
-      
+  
     } catch (error) {
       console.error("Error fetching response:", error);
       return "Oops! Something went wrong.";
     }
   };
+  
 
   const handleSendMessage = async () => {
-    if (inputMessage.trim() === "") return;
+    if (inputMessage.trim() === ""&& !selectedImage) return;
 
     const userMessage = {
       id: messages.length + 1,
-      text: inputMessage,
+      text: inputMessage || (selectedImage ? "📷 Sent an image" : ""),
       sender: "user",
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      image: selectedImage || null, // Attach image URL if available
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
+    setSelectedImage(null); // Clear image after sending
 
     // Fetch Gemini response
-    const botReply = await fetchGeminiResponse(inputMessage);
+    const botReply = await fetchGeminiResponse(inputMessage,selectedImage);
 
     const botMessage = {
       id: messages.length + 2,
@@ -98,7 +140,10 @@ const Chatbot = () => {
                     message.sender === "user" ? "bg-primary text-white rounded-tr-none" : "bg-gray-100 text-gray-800 rounded-tl-none"
                   }`}
                 >
-                  <p>{message.text}</p>
+                  {message.image && (
+                    <img src={message.image} alt="Uploaded" className="max-w-[200px] rounded-lg shadow-md mb-2" />
+                  )}
+                  <ReactMarkdown>{message.text}</ReactMarkdown>
                   <span className={`text-xs mt-1 block ${message.sender === "user" ? "text-white/70" : "text-gray-500"}`}>{message.time}</span>
                 </div>
               </div>
@@ -110,14 +155,21 @@ const Chatbot = () => {
         {/* Input area */}
         <div className="p-3 border-t border-gray-100">
           <div className="flex items-center gap-2">
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full" onClick={handleFileSelect}>
               <Paperclip size={20} />
             </button>
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full">
+            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full" onClick={handleFileSelect}>
               <Image size={20} />
             </button>
+            <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
             <div className="flex-1 relative">
+              {selectedImage && (
+                <div className="mt-2">
+                  <img src={selectedImage} alt="Selected" className="max-w-[200px] rounded-lg shadow-md" />
+                </div>
+              )}
               <textarea
+              
                 className="w-full p-3 pr-10 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-none"
                 placeholder="Type your message..."
                 rows={1}
