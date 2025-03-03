@@ -1,17 +1,24 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import ReactMarkdown from "react-markdown";
-import { Send, User, Bot, Paperclip, Mic, Image } from "lucide-react";
+import { Send, Bot, Paperclip, Mic, Image } from "lucide-react";
 
 const API_KEY = "AIzaSyAuoc6omPHCESF6nREp7L2sHnT1MK5s30k"; // Replace with your actual API key
 
 const Chatbot = () => {
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hello! I'm your VidyaSetu learning assistant. How can I help you today?", sender: "bot", time: "10:30 AM" }
+  const [messages, setMessages] = useState<{ 
+    id: number; 
+    text: string; 
+    sender: string; 
+    time: string; 
+    image?: string | null; 
+  }[]>([
+    { id: 1, text: "Hello! I'm your VidyaSetu learning assistant. How can I help you today?", sender: "bot", time: "10:30 AM", image: null }
   ]);
+  
   const [inputMessage, setInputMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+  // const [loading, setLoading] = useState(false);
+  // const messagesEndRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -35,10 +42,16 @@ const Chatbot = () => {
   };
   
 
-  // Scroll to bottom on new message
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+// Define ref with correct type
+const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+// Scroll to bottom on new message
+useEffect(() => {
+  if (messagesEndRef.current) {
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+  }
+}, [messages]);
+
 
   // Function to send message to Gemini API
   const fetchGeminiResponse = async (userInput: string, imageData: string | null) => {
