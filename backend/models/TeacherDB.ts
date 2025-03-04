@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const teacherSchema = new mongoose.Schema({
+const mongoose2 = require("mongoose");
+const teacherSchema = new mongoose2.Schema({
     name: {
         type: String,
         required: true
@@ -34,11 +34,11 @@ const teacherSchema = new mongoose.Schema({
         type: String // URL or file path to the profile image
     },
     enrolledCourses: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose2.Schema.Types.ObjectId,
         ref: "Course"
     }],
     certificates: [{
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose2.Schema.Types.ObjectId,
         ref: "Certificate"
     }],
     attendance: [{
@@ -58,4 +58,4 @@ const teacherSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-module.exports = mongoose.model("teachers", teacherSchema);
+module.exports = mongoose2.model("teachers2", teacherSchema);

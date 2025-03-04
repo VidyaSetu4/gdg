@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Video, 
   FileText, 
@@ -7,10 +8,22 @@ import {
   BarChart2, 
   Calendar,
   Clock,
-  BookOpen
+  BookOpen,
+  LogOut
 } from 'lucide-react';
 
-const Dashboard = () => {
+const Dashboard = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Remove token from localStorage
+    localStorage.removeItem('token');
+    // Update authentication state
+    setIsAuthenticated(false);
+    // Redirect to LandingPage
+    navigate('/');
+  };
+
   const upcomingClasses = [
     { id: 1, subject: 'Mathematics', topic: 'Algebra Basics', time: '10:00 AM', date: 'Today', teacher: 'Dr. Sharma' },
     { id: 2, subject: 'Science', topic: 'Cell Structure', time: '2:00 PM', date: 'Today', teacher: 'Mrs. Gupta' },
@@ -29,6 +42,13 @@ const Dashboard = () => {
         <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
           <Calendar size={18} className="text-primary" />
           <span className="text-gray-600">June 15, 2025</span>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition"
+          >
+            <LogOut size={18} />
+            Logout
+          </button>
         </div>
       </div>
 

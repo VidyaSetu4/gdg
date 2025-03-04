@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import { 
   BookOpen, 
   Video, 
@@ -16,14 +17,16 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
+  const navigate = useNavigate(); // Initialize navigate function
+
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: <Home size={20} /> },
-    { id: 'onlineClasses', label: 'Online Classes', icon: <Video size={20} /> },
-    { id: 'materials', label: 'Materials', icon: <FileText size={20} /> },
-    { id: 'chatbot', label: 'Chatbot', icon: <MessageSquare size={20} /> },
-    { id: 'tests', label: 'Tests', icon: <ClipboardList size={20} /> },
-    { id: 'progress', label: 'Progress', icon: <BarChart2 size={20} /> },
-    { id: 'profile', label: 'Profile', icon: <User size={20} /> },
+    { id: 'dashboard', label: 'Dashboard', icon: <Home size={20} />, path: '/dashboard' },
+    { id: 'onlineClasses', label: 'Online Classes', icon: <Video size={20} />, path: '/onlineClasses' },
+    { id: 'materials', label: 'Materials', icon: <FileText size={20} />, path: '/materials' },
+    { id: 'chatbot', label: 'Chatbot', icon: <MessageSquare size={20} />, path: '/chatbot' },
+    { id: 'tests', label: 'Tests', icon: <ClipboardList size={20} />, path: '/tests' },
+    { id: 'progress', label: 'Progress', icon: <BarChart2 size={20} />, path: '/progress' },
+    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' },
   ];
 
   return (
@@ -38,7 +41,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
           {menuItems.map((item) => (
             <li key={item.id}>
               <button
-                onClick={() => setActivePage(item.id)}
+                onClick={() => {
+                  setActivePage(item.id);
+                  navigate(item.path); // Navigate to the correct path
+                }}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
                   activePage === item.id
                     ? 'bg-white/20 font-medium'
