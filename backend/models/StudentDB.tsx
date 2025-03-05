@@ -10,7 +10,7 @@ interface IStudent extends Document {
     dateOfBirth: Date;
     school: string;
     joinedDate: Date;
-    profilePicture: string;
+    profilePicture?: string;
     enrolledCourses: mongoose.Types.ObjectId[];
     certificates: mongoose.Types.ObjectId[];
     attendance: {
@@ -22,53 +22,81 @@ interface IStudent extends Document {
     updatedAt?: Date;
 }
 
-const studentSchema = new Schema<IStudent>({
-    name: { 
-        type: String, 
-        required: true 
+// Define the Mongoose schema
+const studentSchema = new Schema<IStudent>(
+    {
+        name: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        email: {
+            type: String,
+            required: true,
+            unique: true,
+            trim: true,
+        },
+        password: {
+            type: String,
+            required: true,
+        },
+        phone: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        address: {
+            type: String,
+            required: true,
+        },
+        dateOfBirth: {
+            type: Date,
+            required: true,
+        },
+        school: {
+            type: String,
+            required: true,
+        },
+        joinedDate: {
+            type: Date,
+            default: () => new Date(),
+        },
+        profilePicture: {
+            type: String,
+            default: "", // Set an empty string if no profile picture is provided
+        },
+        enrolledCourses: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Course",
+            },
+        ],
+        certificates: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Certificate",
+            },
+        ],
+        attendance: [
+            {
+                date: {
+                    type: Date,
+                    required: true,
+                },
+                status: {
+                    type: String,
+                    enum: ["Present", "Absent", "Late"],
+                    required: true,
+                },
+            },
+        ],
+        coursesCompleted: {
+            type: Number,
+            default: 0,
+        },
     },
-    email: { 
-        type: String, 
-        required: true, 
-        unique: true 
-    },
-    
-    phone: { 
-        type: String,
-        required: true 
-    },
-    address: { 
-        type: String,
-        required: true 
-    },
-    dateOfBirth: { 
-        type: Date,
-        required: true 
-    },
-    school: { 
-        type: String,
-        required: true 
-    },
-    joinedDate: { 
-        type: String, // Store as a string in "dd/mm/yyyy" format
-        default: () => {
-            const now = new Date();
-            return now.toLocaleDateString('en-GB'); // Formats as "dd/mm/yyyy"
-        }
-    }
-    profilePicture: { 
-        type: String
-    },
-    // enrolledCourses: [{ 
-    //     type: mongoose.Schema.Types.ObjectId, 
-    //     ref: "Course" 
-    // }],
-    password: { 
-        type: String, 
-        required: true 
-    }
-    
-}, { timestamps: true });
+    { timestamps: true } // Automatically adds createdAt and updatedAt fields
+);
 
 const Student = mongoose.model<IStudent>("Student", studentSchema);
 export default Student;

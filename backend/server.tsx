@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import studentRoutes from "./routes/studentRoutes";
+import teacherRoutes from "./routes/teacherRoutes";
 import bodyParser from "body-parser";
 
 dotenv.config();
@@ -32,6 +33,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/auth", studentRoutes);
+app.use("/api/teacher",teacherRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI!)

@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import SignupPage from './pages/Signup.tsx';
 import Login from './pages/Login.tsx';
 import LandingPage from './pages/LandingPage.tsx';
+import TeacherSignup from './pages/TeacherSignup.tsx';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -66,7 +67,8 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/signup/student" element={<SignupPage />} />
+        <Route path="/signup/teacher" element={<TeacherSignup/>} />
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
         
         {/* Protected Routes */}
