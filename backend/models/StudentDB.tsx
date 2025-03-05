@@ -49,12 +49,15 @@ const studentSchema = new Schema<IStudent>({
         type: String,
         required: true 
     },
-    // joinedDate: { 
-    //     type: Date,
-    //     default: Date.now 
-    // },
+    joinedDate: { 
+        type: String, // Store as a string in "dd/mm/yyyy" format
+        default: () => {
+            const now = new Date();
+            return now.toLocaleDateString('en-GB'); // Formats as "dd/mm/yyyy"
+        }
+    }
     profilePicture: { 
-        type: String 
+        type: String
     },
     // enrolledCourses: [{ 
     //     type: mongoose.Schema.Types.ObjectId, 

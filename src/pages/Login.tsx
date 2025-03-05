@@ -18,15 +18,21 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
         email,
         password,
       });
+
       console.log("Response:", response.data);
-      console.log(response.data.token);
+
+      // Store token and user details in localStorage
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("student", JSON.stringify(response.data.student));
+
       setIsAuthenticated(true);
       navigate("/dashboard");
     } catch (error) {
       console.error("Error:", error);
+      alert("Invalid email or password");
     }
   };
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">

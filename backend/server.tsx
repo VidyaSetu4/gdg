@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import studentRoutes from "./routes/studentRoutes";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
@@ -20,6 +21,9 @@ app.use(cors({
     origin: "http://localhost:5173",
     credentials: true
 }));
+app.use(bodyParser.json({ limit: "10mb" })); // Adjust limit as needed
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

@@ -83,6 +83,7 @@ export default function Signup() {
       
       if (response.ok) {
         setMessage("✅ Signup successful!");
+        
       } else {
         setMessage(`❌ Error: ${result.message || "Failed to sign up"}`);
       }
@@ -258,6 +259,7 @@ export default function Signup() {
                   alt="Profile Preview" 
                   className="w-24 h-24 rounded-full object-cover border-2 border-blue-500" 
                 />
+            
               </div>
             )}
           </div>
@@ -319,6 +321,7 @@ export default function Signup() {
               >
                 {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
               </button>
+              
             </div>
           </div>
 

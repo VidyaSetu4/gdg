@@ -54,7 +54,9 @@ const Dashboard = ({ setIsAuthenticated }) => {
 
       {/* Welcome Card */}
       <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6 rounded-xl shadow-md">
-        <h2 className="text-xl font-semibold mb-2">Welcome back, Student!</h2>
+        <h2 className="text-xl font-semibold mb-2">      Welcome back, {JSON.parse(localStorage.getItem("student"))?.name || "Student"}
+
+        </h2>
         <p className="opacity-90 mb-4">Continue your learning journey with VidyaSetu.</p>
         <div className="flex items-center gap-2 text-sm bg-white/20 w-fit px-3 py-1.5 rounded-full">
           <Clock size={16} />
