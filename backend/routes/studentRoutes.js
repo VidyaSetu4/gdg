@@ -209,4 +209,28 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+router.post('verify-token', (req, res) => {
+  const token = req.headers['authorization']?.split(' ')[1]; // Get token from Authorization header
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  jwt.verify(token, SECRET_KEY, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Failed to authenticate token' });
+    }
+
+    // Find user by ID (assuming the token contains the user ID)
+    const user = users.find(user => user.id === decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User  not found' });
+    }
+
+    // Return user role
+    res.json({ role: user.role });
+  });
+});
+
+
 export default router;

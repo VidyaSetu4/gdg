@@ -22,8 +22,11 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
       });
       console.log("Response:", response.data);
       console.log(response.data.token);
-      localStorage.setItem("user", response.data.token);
+      localStorage.setItem("user", response.data);
+      localStorage.setItem("token", response.data.token);
       setIsAuthenticated(true);
+      if(response.data.role === "student") navigate("/dashboard");
+      else navigate("/signup/teacher");
       navigate("/dashboard");
     } catch (error) {
       console.error("Error:", error);
@@ -60,6 +63,15 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
           <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow-md transition">
             Login
           </button>
+          {/* Message for existing users */}
+          <div className="text-center p-1">
+            <p className="text-sm text-gray-600">
+              Already have an account?
+              <a href="#" onClick={(e) => { e.preventDefault(); window.history.back(); }} className="text-blue-600 hover:underline">
+                Sign up
+              </a>
+            </p>
+          </div>
         </form>
       </div>
     </div>

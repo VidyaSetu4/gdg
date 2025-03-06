@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function Signup() {
   const [profilePic, setProfilePic] = useState<string | null>(null);
@@ -16,6 +17,7 @@ export default function Signup() {
   const schoolRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const confirmPasswordRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const availableCourses = [
     "Math", 
@@ -80,6 +82,7 @@ export default function Signup() {
       
       if (response.ok) {
         setMessage("✅ Signup successful!");
+        navigate("/login");
       } else {
         setMessage(`❌ Error: ${result.message || "Failed to sign up"}`);
       }
@@ -162,7 +165,7 @@ export default function Signup() {
             <div className="relative">
               <input ref={passwordRef} type={showPassword ? "text" : "password"} id="password" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" required placeholder="Enter your password" />
               <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-600 transition" onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? "👁️" : "👁️‍🗨️"}
+                {showPassword ? "👁" : "👁‍🗨"}
               </button>
             </div>
           </div>
@@ -173,7 +176,7 @@ export default function Signup() {
             <div className="relative">
               <input ref={confirmPasswordRef} type={showConfirmPassword ? "text" : "password"} id="confirm-password" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" required placeholder="Confirm your password" />
               <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-600 transition" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
+                {showConfirmPassword ? "👁" : "👁‍🗨"}
               </button>
             </div>
           </div>
@@ -182,7 +185,15 @@ export default function Signup() {
           <button type="submit" disabled={loading} className={`w-full py-3 rounded-lg text-white font-semibold transition duration-300 ease-in-out ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'}`}>
             {loading ? "Submitting..." : "Sign Up"}
           </button>
+          {/* Message for existing users */}
+        <div className="text-center p-1">
+          <p className="text-sm text-gray-600">
+            Already have an account? 
+            <a href="/login" className="text-blue-600 hover:underline"> Log in</a>
+          </p>
+        </div>
         </form>
+        
       </div>
     </div>
   );
