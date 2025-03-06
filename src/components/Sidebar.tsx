@@ -1,12 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import { 
-  BookOpen, 
-  Video, 
-  FileText, 
-  MessageSquare, 
-  ClipboardList, 
-  BarChart2, 
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  BookOpen,
+  Video,
+  FileText,
+  MessageSquare,
+  ClipboardList,
+  BarChart2,
   User,
   Home
 } from 'lucide-react';
@@ -17,7 +17,8 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
-  const navigate = useNavigate(); // Initialize navigate function
+  const navigate = useNavigate();
+  const location = useLocation(); // Get the current URL
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <Home size={20} />, path: '/dashboard' },
@@ -35,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
         <BookOpen size={28} />
         <h1 className="text-2xl font-bold">VidyaSetu</h1>
       </div>
-      
+
       <nav className="flex-1">
         <ul className="space-y-2">
           {menuItems.map((item) => (
@@ -43,7 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
               <button
                 onClick={() => {
                   setActivePage(item.id);
-                  navigate(item.path); // Navigate to the correct path
+                  navigate(item.path);
                 }}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
                   activePage === item.id
@@ -58,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
           ))}
         </ul>
       </nav>
-      
+
       <div className="mt-auto pt-4 border-t border-white/20">
         <div className="flex items-center gap-3 p-2">
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">

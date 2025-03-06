@@ -131,9 +131,6 @@ router.post("/login", async (req, res) => {
 });
 
 
-
-// ✅ Get Student Profile
-
 // ✅ Get Student Profile
 router.get("/profile", async (req, res) => {
   try {
@@ -209,28 +206,39 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.post('verify-token', (req, res) => {
+router.post('/verify-token', async (req, res) => {
   const token = req.headers['authorization']?.split(' ')[1]; // Get token from Authorization header
 
   if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
+      return res.status(401).json({ message: 'No token provided' });
   }
 
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: 'Failed to authenticate token' });
-    }
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+      if (err) {
+          return res.status(403).json({ message: 'Failed to authenticate token' });
+      }
 
-    // Find user by ID (assuming the token contains the user ID)
-    const user = users.find(user => user.id === decoded.id);
-    if (!user) {
-      return res.status(404).json({ message: 'User  not found' });
-    }
+      try {
+          // Find user in Student collection
+          let user = await Student.findOne({ _id: decoded.id });
+          console.log(decoded.id);
+          // If not found in Student, check in Teacher collection
+          if (!user) {
+              user = await Teacher.findOne({ _id: decoded.id });
+          }
 
-    // Return user role
-    res.json({ role: user.role });
+          if (!user) {
+              return res.status(404).json({ message: 'User not found' });
+          }
+          // Return user role
+          res.json({ role: user.role });
+      } catch (error) {
+          console.error("Error verifying token:", error);
+          res.status(500).json({ message: 'Internal server error' });
+      }
   });
 });
+
 
 
 export default router;

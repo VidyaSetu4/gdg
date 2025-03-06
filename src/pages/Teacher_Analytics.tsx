@@ -1,7 +1,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const Analytics = () => {
+const TeacherAnalytics = () => {
   const testData = [
     { name: 'Test 1', avgScore: 85, highestScore: 98, lowestScore: 65 },
     { name: 'Test 2', avgScore: 78, highestScore: 95, lowestScore: 60 },
@@ -48,4 +48,4 @@ const Analytics = () => {
   );
 };
 
-export default Analytics;
+export default TeacherAnalytics;

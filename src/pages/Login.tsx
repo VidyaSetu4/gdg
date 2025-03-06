@@ -22,12 +22,10 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
       });
       console.log("Response:", response.data);
       console.log(response.data.token);
-      localStorage.setItem("user", response.data);
+      localStorage.setItem("users", response.data);
       localStorage.setItem("token", response.data.token);
       setIsAuthenticated(true);
-      if(response.data.role === "student") navigate("/dashboard");
-      else navigate("/signup/teacher");
-      navigate("/dashboard");
+      navigate("/meetings");
     } catch (error) {
       console.error("Error:", error);
     }

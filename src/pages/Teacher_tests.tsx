@@ -1,7 +1,7 @@
 import React from 'react';
 import { ClipboardList, Clock, Users, Award } from 'lucide-react';
 
-const Tests = () => {
+const ConductTests = () => {
   const tests = [
     {
       id: 1,
@@ -98,4 +98,4 @@ const Tests = () => {
   );
 };
 
-export default Tests;
+export default ConductTests;

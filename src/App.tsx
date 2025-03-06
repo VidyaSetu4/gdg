@@ -13,13 +13,22 @@ import SignupPage from './pages/Signup.tsx';
 import Login from './pages/Login.tsx';
 import LandingPage from './pages/LandingPage.tsx';
 import TeacherSignup from './pages/TeacherSignup.tsx';
+import TeacherOnlineClasses from './pages/Teacher_Meetings.tsx';
+import ProvideMaterials from './pages/Teacher_Materials.tsx';
+import ConductTests from './pages/Teacher_tests.tsx';
+import TeacherProfile from './pages/Teacher_profile.tsx';
+import TeacherAnalytics from './pages/Teacher_Analytics.tsx';
+// import TeacherDashboard from './pages/TeacherDashboard.tsx';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activePage, setActivePage] = useState('dashboard');
+  const [activePage, setActivePage] = useState('/dashboard');
 
-  const hideSidebar = location.pathname === '/signup/student' || location.pathname === '/signup/teacher' || location.pathname === '/login';
+  const hideSidebar =
+    location.pathname === '/signup/student' ||
+    location.pathname === '/signup/teacher' ||
+    location.pathname === '/login';
 
   if (hideSidebar) {
     return <div className="h-screen w-screen flex justify-center items-center">{children}</div>;
@@ -51,14 +60,42 @@ function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
     if (token) {
-      setIsAuthenticated(true);
+      verifyToken(token);
+    } else {
+      setIsAuthenticated(false);
     }
   }, []);
+
+  const verifyToken = async (token: string) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/verify-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error(`API returned status ${response.status}`);
+
+      const result = await response.json();
+      setIsAuthenticated(true);
+      setUserRole(result.role);
+    } catch (error) {
+      console.error("Error verifying token:", error);
+      setIsAuthenticated(false);
+      setUserRole(null);
+    }
+  };
+
+  if (isAuthenticated === null) {
+    return <div className="h-screen w-screen flex justify-center items-center text-xl">Loading...</div>;
+  }
 
   return (
     <Router>
@@ -72,15 +109,33 @@ function App() {
         {/* Protected Routes */}
         {isAuthenticated ? (
           <>
-            <Route path="/" element={<Layout><Dashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
-            <Route path="/dashboard" element={<Layout><Dashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
-            <Route path="/onlineClasses" element={<Layout><OnlineClasses /></Layout>} />
-            <Route path="/materials" element={<Layout><Materials /></Layout>} />
-            <Route path="/chatbot" element={<Layout><Chatbot /></Layout>} />
-            <Route path="/tests" element={<Layout><Tests /></Layout>} />
-            <Route path="/progress" element={<Layout><Progress /></Layout>} />
-            <Route path="/profile" element={<Layout><Profile /></Layout>} />
-            <Route path="*" element={<Navigate to="/dashboard" />} />
+            {userRole === 'student' ? (
+              <>
+                <Route index element={<Layout><Dashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
+                <Route path="/dashboard" element={<Layout><Dashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
+                <Route path="/onlineClasses" element={<Layout><OnlineClasses /></Layout>} />
+                <Route path="/materials" element={<Layout><Materials /></Layout>} />
+                <Route path="/tests" element={<Layout><Tests/></Layout>} />
+                <Route path="/progress" element={<Layout><Progress /></Layout>} />
+                <Route path="/profile" element={<Layout><Profile /></Layout>} /> 
+                <Route path="/chatbot" element={<Layout><Chatbot /></Layout>} /> 
+                <Route path="*" element={<Navigate to="/dashboard" />} />
+              </>
+            ) : userRole === 'teacher' ? (
+              <>
+                {/* <Route path="/dashboard" element={<Layout><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} /> */}
+                {/* <Route path="/dashbord" element={<Layout><TeacherDashboard /></Layout>} /> */}
+                <Route path="/materials" element={<Layout><ProvideMaterials /></Layout>} />
+                <Route path="/onlineClasses" element={<Layout><TeacherOnlineClasses /></Layout>} />
+                <Route path="/tests" element={<Layout><ConductTests /></Layout>} />
+                <Route path="/profile" element={<Layout><TeacherProfile /></Layout>} />
+                <Route path="/progress" element={<Layout><TeacherAnalytics /></Layout>} />
+                <Route path="/chatbot" element={<Layout><Chatbot /></Layout>} /> 
+                <Route path="*" element={<Navigate to="/onlineClasses" />} />
+              </>
+            ) : (
+              <Route path="*" element={<Navigate to="/" />} />
+            )}
           </>
         ) : (
           <Route path="*" element={<Navigate to="/" />} />

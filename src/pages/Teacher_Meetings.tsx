@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Video, Calendar, Clock, Download } from 'lucide-react';
 
-const OnlineClasses = () => {
+const TeacherOnlineClasses = () => {
   const [classes] = useState([
     {
       id: 1,
@@ -68,4 +68,4 @@ const OnlineClasses = () => {
   );
 };
 
-export default OnlineClasses;
+export default TeacherOnlineClasses;

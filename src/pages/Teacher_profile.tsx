@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserCircle, Mail, Phone, Book, Settings, Bell, Shield, LogOut } from 'lucide-react';
 
-const Profile = () => {
+const TeacherProfile = () => {
   const teacherProfile = {
     name: 'Dr. Sarah Johnson',
     subject: 'Mathematics',
@@ -126,4 +126,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default TeacherProfile;

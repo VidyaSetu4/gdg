@@ -1,7 +1,7 @@
 import React from 'react';
 import { FileText, Download, Upload, Search } from 'lucide-react';
 
-const Materials = () => {
+const ProvideMaterials = () => {
   const materials = [
     {
       id: 1,
@@ -90,4 +90,4 @@ const Materials = () => {
   );
 };
 
-export default Materials;
+export default ProvideMaterials;

@@ -20,7 +20,9 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
     origin: "http://localhost:5173",
-    credentials: true
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+
 }));
 app.use(bodyParser.json({ limit: "10mb" })); // Adjust limit as needed
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
@@ -33,7 +35,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/auth", studentRoutes);
-app.use("/api/teacher",teacherRoutes);
+app.use("/api/teacher", teacherRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI!)
