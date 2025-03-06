@@ -34,10 +34,17 @@ function App() {
     navigate(`/signup/${type}`);
   };
 
+  const scrollToSection = (sectionId:string) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       {/* Hero Section */}
-      <header className="bg-white/80 backdrop-blur-sm fixed w-full z-50 shadow-sm">
+      <header className="bg-white/80 backdrop-blur-sm fixed w-full z-50 shadow-lg">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -45,13 +52,13 @@ function App() {
               <span className="text-2xl font-bold text-gray-800">VidyaSetu</span>
             </div>
             <nav className="hidden md:flex space-x-8">
-              <button className="text-gray-600 hover:text-indigo-600 transition-colors">About</button>
-              <button className="text-gray-600 hover:text-indigo-600 transition-colors">Features</button>
-              <button className="text-gray-600 hover:text-indigo-600 transition-colors">Impact</button>
-              <button className="text-gray-600 hover:text-indigo-600 transition-colors">Benefits</button>
+              <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-indigo-600 transition-colors">About</button>
+              <button onClick={() => scrollToSection('impact')} className="text-gray-600 hover:text-indigo-600 transition-colors">Impact</button>
+              <button onClick={() => scrollToSection('features')} className="text-gray-600 hover:text-indigo-600 transition-colors">Features</button>
+              <button onClick={() => scrollToSection('benefits')} className="text-gray-600 hover:text-indigo-600 transition-colors">Benefits</button>
               <button 
                 onClick={handleSignupClick} 
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors"
               >
                 Join Now
               </button>
@@ -79,18 +86,18 @@ function App() {
               We're breaking down barriers and creating pathways to learning for everyone, everywhere.
             </p>
             <div className="flex justify-center gap-4">
-              <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors text-lg">
+              <button 
+                onClick={handleSignupClick} 
+                className="bg-indigo-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition-colors text-lg"
+              >
                 Start Learning
-              </button>
-              <button className="border-2 border-indigo-600 text-indigo-600 px-8 py-3 rounded-lg hover:bg-indigo-50 transition-colors text-lg">
-                Learn More
               </button>
             </div>
           </div>
         </section>
 
         {/* Mission Section */}
-        <section className="py-20 bg-white">
+        <section id="about" className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center gap-12">
               <div className="md:w-1/2">
@@ -126,7 +133,7 @@ function App() {
         </section>
 
         {/* Impact Stats */}
-        <section className="py-20 bg-indigo-600">
+        <section id="impact" className="py-20 bg-indigo-600">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div className="text-center">
@@ -153,77 +160,79 @@ function App() {
           </div>
         </section>
 
-        {/* Visual Features Section */}
-        <section className="py-20 bg-white">
+        {/* Features Section */}
+        <section id="features" className="py-20 bg-white">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
-              Experience Learning Like Never Before
+              Features of VidyaSetu
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="relative group">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
                 <img 
                   src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80"
-                  alt="Live Online Classes"
-                  className="w-full h-64 object-cover rounded-xl shadow-lg"
+                  alt="Interactive Learning"
+                  className="w-full h-32 object-cover rounded-lg mb-4"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl flex items-end p-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Live Online Classes</h3>
-                    <p className="text-white/90">Interactive sessions with real-time doubt solving</p>
-                  </div>
-                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Interactive Learning</h3>
+                <p className="text-gray-600">Engage with interactive content that makes learning fun and effective.</p>
               </div>
-              <div className="relative group">
+              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
                 <img 
                   src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80"
-                  alt="Recorded Sessions"
-                  className="w-full h-64 object-cover rounded-xl shadow-lg"
+                  alt="Personalized Learning"
+                  className="w-full h-32 object-cover rounded-lg mb-4"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl flex items-end p-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Recorded Sessions</h3>
-                    <p className="text-white/90">Learn at your own pace, anytime, anywhere</p>
-                  </div>
-                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Personalized Learning</h3>
+                <p className="text-gray-600">Tailor your learning experience to fit your individual needs and pace.</p>
               </div>
-              <div className="relative group">
-                <img 
-                  src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1000&q=80"
-                  alt="Offline Learning"
-                  className="w-full h-64 object-cover rounded-xl shadow-lg"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl flex items-end p-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">Offline Learning</h3>
-                    <p className="text-white/90">Download materials for uninterrupted learning</p>
-                  </div>
-                </div>
-              </div>
-              <div className="relative group">
+              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
                 <img 
                   src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80"
-                  alt="AI-Powered Support"
-                  className="w-full h-64 object-cover rounded-xl shadow-lg"
+                  alt="24/7 Support"
+                  className="w-full h-32 object-cover rounded-lg mb-4"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent rounded-xl flex items-end p-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">AI-Powered Support</h3>
-                    <p className="text-white/90">24/7 assistance with our intelligent chatbot</p>
-                  </div>
-                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2">24/7 Support</h3>
+                <p className="text-gray-600">Get assistance anytime with our dedicated support team and resources.</p>
+              </div>
+              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
+                <img 
+                  src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80"
+                  alt="Community Engagement"
+                  className="w-full h-32 object-cover rounded-lg mb-4"
+                />
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Community Engagement</h3>
+                <p className="text-gray-600">Join a community of learners and educators to share knowledge and experiences.</p>
+              </div>
+              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
+                <img 
+                  src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80"
+                  alt="Resource Sharing"
+                  className="w-full h-32 object-cover rounded-lg mb-4"
+                />
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Resource Sharing</h3>
+                <p className="text-gray-600">Access a wealth of resources, including study materials and tools.</p>
+              </div>
+              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
+                <img 
+                  src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80"
+                  alt="Data Insights"
+                  className="w-full h-32 object-cover rounded-lg mb-4"
+                />
+                <h3 className="text-xl font-bold text-gray-800 mb-2">Data Insights</h3>
+                <p className="text-gray-600">Utilize analytics to track progress and improve learning outcomes.</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Beneficiaries Section */}
-        <section className="py-20 bg-gray-50">
+        {/* Benefits Section */}
+        <section id="benefits" className="py-20 bg-gray-50">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
               Who Benefits from VidyaSetu?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
                 <School className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Students</h3>
                 <ul className="text-gray-600 space-y-2">
@@ -233,7 +242,7 @@ function App() {
                   <li>Peer learning opportunities</li>
                 </ul>
               </div>
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
                 <GraduationIcon className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Teachers</h3>
                 <ul className="text-gray-600 space-y-2">
@@ -243,7 +252,7 @@ function App() {
                   <li>Professional development</li>
                 </ul>
               </div>
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
                 <Building2 className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Institutions</h3>
                 <ul className="text-gray-600 space-y-2">
@@ -253,7 +262,7 @@ function App() {
                   <li>Quality standardization</li>
                 </ul>
               </div>
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center">
+              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
                 <Users2 className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
                 <h3 className="text-xl font-bold text-gray-800 mb-4">Communities</h3>
                 <ul className="text-gray-600 space-y-2">
@@ -285,11 +294,11 @@ function App() {
               Take the first step towards quality education that knows no boundaries.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="bg-white text-indigo-600 px-8 py-3 rounded-lg hover:bg-indigo-50 transition-colors text-lg font-semibold">
+              <button 
+                onClick={handleSignupClick} 
+                className="bg-white text-indigo-600 px-8 py-3 rounded-lg shadow-lg hover:bg-indigo-50 transition-colors text-lg font-semibold transform hover:scale-105"
+              >
                 Get Started Now
-              </button>
-              <button className="border-2 border-white text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition-colors text-lg">
-                Schedule a Demo
               </button>
             </div>
           </div>
@@ -304,7 +313,7 @@ function App() {
             <div className="flex justify-center space-x-4">
               <button
                 onClick={() => handleSignupTypeSelect('student')}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex flex-col items-center"
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition flex flex-col items-center shadow-md"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
@@ -326,7 +335,7 @@ function App() {
               </button>
               <button
                 onClick={() => handleSignupTypeSelect('teacher')}
-                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex flex-col items-center"
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex flex-col items-center shadow-md"
               >
                 <svg 
                   xmlns="http://www.w3.org/2000/svg" 
