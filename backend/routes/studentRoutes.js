@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import Student from "../models/StudentDB.js"; // Ensure this is a JS file
 import multer from "multer";
 import path from "path";
+import Teacher from "../models/TeacherDB.js";
 
 dotenv.config();
 const router = express.Router();
@@ -71,41 +72,56 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// ✅ Student Login
-// ✅ Student Login
+
+// ✅ Student or Teacher Login
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if student exists
-    const student = await Student.findOne({ email });
-    if (!student) {
+    // Check if user is a student or teacher
+    let user = await Student.findOne({ email });
+    let role = "student";
+
+    if (!user) {
+      user = await Teacher.findOne({ email });
+      role = "teacher";
+    }
+
+    if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Check if password is correct
-    const isMatch = await bcrypt.compare(password, student.password);
+    // Verify password
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    // Send the whole student info (excluding password)
+    // Send response with role-based data
     res.json({
       message: "Login successful",
       token,
-      student: {
-        id: student._id,
-        name: student.name,
-        email: student.email,
-        phone: student.phone,
-        address: student.address,
-        dateOfBirth: student.dateOfBirth,
-        school: student.school,
-        profilePicture: student.profilePicture,
-      }
+      role,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        ...(role === "student" && {
+          dateOfBirth: user.dateOfBirth,
+          school: user.school,
+          profilePicture: user.profilePicture,
+        }),
+        ...(role === "teacher" && {
+          qualifications: user.qualifications,
+          subjects: user.subjects,
+          experience: user.experience,
+        }),
+      },
     });
 
   } catch (error) {
@@ -113,6 +129,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
 
 
 // ✅ Get Student Profile

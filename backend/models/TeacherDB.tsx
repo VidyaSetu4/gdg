@@ -17,8 +17,9 @@ interface ITeacher extends Document {
     address?: string;
     dateOfBirth?: Date;
     school?: string;
-    profilePicture?: string; // Profile picture stored as URL or Base64
+    profilePicture?: string;
     subjectSpeciality: string;
+    role: "teacher"; // Explicit role
     certificates?: ICertificate[];
     createdAt?: Date;
     updatedAt?: Date;
@@ -36,6 +37,7 @@ const teacherSchema = new Schema<ITeacher>(
         school: { type: String },
         profilePicture: { type: String }, // Store Base64 string or URL
         subjectSpeciality: { type: String, required: true },
+        role: { type: String, enum: ["teacher"], default: "teacher" }, // Enforced role
         certificates: [
             {
                 name: { type: String, required: true },

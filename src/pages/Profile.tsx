@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, BookOpen, Award, Settings, Edit, Camera, LogOut } from 'lucide-react';
 
 const Profile = () => {
@@ -13,7 +13,7 @@ const Profile = () => {
     grade: '10th Standard',
     school: 'Delhi Public School, New Delhi',
     joinDate: 'March 10, 2025',
-    profilePicture: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80'
+    profileImage: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80'
   };
   
   const enrolledCourses = [
@@ -29,36 +29,6 @@ const Profile = () => {
     { id: 2, name: 'Science Star Performer', issueDate: 'April 20, 2025', issuer: 'VidyaSetu' },
     { id: 3, name: 'English Language Proficiency', issueDate: 'March 10, 2025', issuer: 'VidyaSetu' },
   ];
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const storedProfile = localStorage.getItem('student');
-        if (storedProfile) {
-          setProfile(JSON.parse(storedProfile));
-        } else {
-          setProfile(studentInfo); // Fallback to default info
-        }
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchProfile();
-  }, []);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
 
   return (
     <div className="space-y-6">
@@ -71,8 +41,8 @@ const Profile = () => {
           <div className="flex flex-col md:flex-row md:items-end gap-4 -mt-16">
             <div className="relative">
               <img 
-                src={profile.profilePicture} 
-                alt="WHO KNOWS"
+                src={studentInfo.profileImage} 
+                alt={studentInfo.name} 
                 className="w-32 h-32 rounded-full border-4 border-white object-cover"
               />
               <button className="absolute bottom-0 right-0 p-2 bg-primary text-white rounded-full hover:bg-primary/90 transition-colors">
@@ -80,8 +50,8 @@ const Profile = () => {
               </button>
             </div>
             <div className="flex-1 pt-4 md:pt-0">
-              <h2 className="text-2xl font-bold">{profile.name}</h2>
-              <p className="text-gray-600">{studentInfo.grade} • {profile.school}</p>
+              <h2 className="text-2xl font-bold">{studentInfo.name}</h2>
+              <p className="text-gray-600">{studentInfo.grade} • {studentInfo.school}</p>
             </div>
             <div className="flex gap-2 mt-4 md:mt-0">
               <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors">
@@ -139,7 +109,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Full Name</h3>
                 <div className="flex items-center gap-2">
                   <User size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.name}</p>
+                  <p className="text-gray-800">{studentInfo.name}</p>
                 </div>
               </div>
               
@@ -147,7 +117,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Email Address</h3>
                 <div className="flex items-center gap-2">
                   <Mail size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.email}</p>
+                  <p className="text-gray-800">{studentInfo.email}</p>
                 </div>
               </div>
               
@@ -155,7 +125,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Phone Number</h3>
                 <div className="flex items-center gap-2">
                   <Phone size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.phone}</p>
+                  <p className="text-gray-800">{studentInfo.phone}</p>
                 </div>
               </div>
               
@@ -163,7 +133,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Address</h3>
                 <div className="flex items-center gap-2">
                   <MapPin size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.address}</p>
+                  <p className="text-gray-800">{studentInfo.address}</p>
                 </div>
               </div>
             </div>
@@ -173,7 +143,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Date of Birth</h3>
                 <div className="flex items-center gap-2">
                   <Calendar size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.dateOfBirth}</p>
+                  <p className="text-gray-800">{studentInfo.dateOfBirth}</p>
                 </div>
               </div>
               
@@ -181,7 +151,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Grade/Class</h3>
                 <div className="flex items-center gap-2">
                   <BookOpen size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.grade}</p>
+                  <p className="text-gray-800">{studentInfo.grade}</p>
                 </div>
               </div>
               
@@ -189,7 +159,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">School</h3>
                 <div className="flex items-center gap-2">
                   <BookOpen size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.school}</p>
+                  <p className="text-gray-800">{studentInfo.school}</p>
                 </div>
               </div>
               
@@ -197,7 +167,7 @@ const Profile = () => {
                 <h3 className="text-sm font-medium text-gray-500 mb-1">Joined VidyaSetu</h3>
                 <div className="flex items-center gap-2">
                   <Calendar size={18} className="text-gray-400" />
-                  <p className="text-gray-800">{profile.joinedDate}</p>
+                  <p className="text-gray-800">{studentInfo.joinDate}</p>
                 </div>
               </div>
             </div>

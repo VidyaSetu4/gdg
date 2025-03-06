@@ -18,6 +18,8 @@ const Dashboard = ({ setIsAuthenticated }) => {
   const handleLogout = () => {
     // Remove token from localStorage
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
     // Update authentication state
     setIsAuthenticated(false);
     // Redirect to LandingPage
