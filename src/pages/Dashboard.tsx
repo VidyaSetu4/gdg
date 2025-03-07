@@ -22,7 +22,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsAuthenticated }) => {
   const handleLogout = () => {
     // Remove token from localStorage
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('users');
 
     // Update authentication state
     setIsAuthenticated(false);
@@ -60,7 +60,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsAuthenticated }) => {
 
       {/* Welcome Card */}
       <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-6 rounded-xl shadow-md">
-        <h2 className="text-xl font-semibold mb-2">      Welcome back, {JSON.parse(localStorage.getItem("student") || '{}')?.name || "Student"}
+        <h2 className="text-xl font-semibold mb-2">      Welcome back, student
+
         </h2>
         <p className="opacity-90 mb-4">Continue your learning journey with VidyaSetu.</p>
         <div className="flex items-center gap-2 text-sm bg-white/20 w-fit px-3 py-1.5 rounded-full">

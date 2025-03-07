@@ -18,7 +18,7 @@ import ProvideMaterials from './pages/Teacher_Materials.tsx';
 import ConductTests from './pages/Teacher_tests.tsx';
 import TeacherProfile from './pages/Teacher_profile.tsx';
 import TeacherAnalytics from './pages/Teacher_Analytics.tsx';
-// import TeacherDashboard from './pages/TeacherDashboard.tsx';
+import TeacherDashboard from './pages/Teacher_Dashboard.tsx';
 
 function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -124,7 +124,7 @@ function App() {
             ) : userRole === 'teacher' ? (
               <>
                 {/* <Route path="/dashboard" element={<Layout><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} /> */}
-                {/* <Route path="/dashbord" element={<Layout><TeacherDashboard /></Layout>} /> */}
+                <Route path="/dashboard" element={<Layout><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
                 <Route path="/materials" element={<Layout><ProvideMaterials /></Layout>} />
                 <Route path="/onlineClasses" element={<Layout><TeacherOnlineClasses /></Layout>} />
                 <Route path="/tests" element={<Layout><ConductTests /></Layout>} />
@@ -134,7 +134,7 @@ function App() {
                 <Route path="*" element={<Navigate to="/onlineClasses" />} />
               </>
             ) : (
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
             )}
           </>
         ) : (

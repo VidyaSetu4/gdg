@@ -25,7 +25,8 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated }) => {
       localStorage.setItem("users", response.data);
       localStorage.setItem("token", response.data.token);
       setIsAuthenticated(true);
-      navigate("/meetings");
+      navigate("/dashboard");
+      window.location.reload();
     } catch (error) {
       console.error("Error:", error);
     }
