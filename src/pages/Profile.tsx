@@ -1,34 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, BookOpen, Award, Settings, Edit, Camera, LogOut } from 'lucide-react';
+import axios from 'axios';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('personal');
+  const [studentInfo, setStudentInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    dateOfBirth: '',
+    grade: '10th Standard', // Default value since not in schema
+    school: '',
+    joinDate: '',
+    profileImage: ''
+  });
   
-  const studentInfo = {
-    name: 'Aryan Sharma',
-    email: 'aryan.sharma@example.com',
-    phone: '+91 98765 43210',
-    address: 'New Delhi, India',
-    dateOfBirth: 'January 15, 2010',
-    grade: '10th Standard',
-    school: 'Delhi Public School, New Delhi',
-    joinDate: 'March 10, 2025',
-    profileImage: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80'
-  };
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [certificates, setCertificates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        // Fetch student profile
+        console.log("🚀 Sending request to /api/auth/profile...");
+        const response = await axios.get('http://localhost:5000/api/auth/profile',{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+        const studentInfo = response.data;
+        //console.log(response.data);//-----------------------------------------------------------------------------------------------
+        console.log("✅ Response received:", response); // ✅ Log entire response
+        console.log("🎯 Extracted data:", response.data); // ✅ Log extracted data
   
-  const enrolledCourses = [
-    { id: 1, name: 'Mathematics - Class 10', progress: 85, teacher: 'Dr. Sharma' },
-    { id: 2, name: 'Science - Class 10', progress: 92, teacher: 'Mrs. Gupta' },
-    { id: 3, name: 'English - Class 10', progress: 78, teacher: 'Mr. Patel' },
-    { id: 4, name: 'History - Class 10', progress: 65, teacher: 'Ms. Reddy' },
-    { id: 5, name: 'Geography - Class 10', progress: 70, teacher: 'Mr. Singh' },
-  ];
-  
-  const certificates = [
-    { id: 1, name: 'Mathematics Excellence', issueDate: 'May 15, 2025', issuer: 'VidyaSetu' },
-    { id: 2, name: 'Science Star Performer', issueDate: 'April 20, 2025', issuer: 'VidyaSetu' },
-    { id: 3, name: 'English Language Proficiency', issueDate: 'March 10, 2025', issuer: 'VidyaSetu' },
-  ];
+        // Format the date of birth
+        const dob = new Date(studentInfo.student.dateOfBirth);
+        const formattedDOB = dob.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        
+        // Format the join date
+        const joinedDate = new Date(studentInfo.student.joinedDate);
+        const formattedJoinDate = joinedDate.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        
+        // Set student information
+        setStudentInfo({
+          name: studentInfo.student.name,
+          email: studentInfo.student.email,
+          phone: studentInfo.student.phone,
+          address: studentInfo.student.address,
+          dateOfBirth: formattedDOB,
+          grade: '10th Standard', // Hardcoded since not in schema
+          school: studentInfo.student.school,
+          joinDate: formattedJoinDate,
+          profileImage: studentInfo.student.profilePicture || '/default-profile.jpg' // Use default if no image
+        });
+        
+        // Fetch enrolled courses data
+        if (studentInfo.student.enrolledCourses && studentInfo.student.enrolledCourses.length > 0) {
+          const studentCoursesResponse = await axios.get('/api/student/courses');
+          setEnrolledCourses(studentCoursesResponse.data);
+        }
+        
+        // Fetch certificates data
+        if (studentInfo.student.certificates && studentInfo.student.certificates.length > 0) {
+          const studentCertificatesResponse = await axios.get('/api/student/certificates');
+          setCertificates(studentCertificatesResponse.data);
+        }
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching student data:', err);
+        setError('Failed to load profile data. Please try again later.');
+        setLoading(false);
+      }
+    };
+    fetchStudentData()
+    //console.log(fetchStudentData());
+  }, []);
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-64">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+    </div>;
+  }
+
+  if (error) {
+    return <div className="bg-red-50 p-4 rounded-lg text-red-600">{error}</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -193,33 +261,39 @@ const Profile = () => {
           </div>
           
           <div className="divide-y divide-gray-100">
-            {enrolledCourses.map(course => (
-              <div key={course.id} className="p-4 hover:bg-gray-50">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div>
-                    <h3 className="font-medium">{course.name}</h3>
-                    <p className="text-sm text-gray-600">Teacher: {course.teacher}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-32">
-                      <div className="flex justify-between mb-1">
-                        <span className="text-xs text-gray-600">Progress</span>
-                        <span className="text-xs font-medium">{course.progress}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-1.5">
-                        <div 
-                          className="bg-primary h-1.5 rounded-full" 
-                          style={{ width: `${course.progress}%` }}
-                        ></div>
-                      </div>
+            {enrolledCourses.length > 0 ? (
+              enrolledCourses.map(course => (
+                <div key={course._id} className="p-4 hover:bg-gray-50">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h3 className="font-medium">{course.name}</h3>
+                      <p className="text-sm text-gray-600">Teacher: {course.teacherName}</p>
                     </div>
-                    <button className="text-primary hover:text-primary/80 text-sm font-medium">
-                      View
-                    </button>
+                    <div className="flex items-center gap-3">
+                      <div className="w-32">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-xs text-gray-600">Progress</span>
+                          <span className="text-xs font-medium">{course.progress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                          <div 
+                            className="bg-primary h-1.5 rounded-full" 
+                            style={{ width: `${course.progress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <button className="text-primary hover:text-primary/80 text-sm font-medium">
+                        View
+                      </button>
+                    </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-gray-500">
+                You are not enrolled in any courses yet.
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}
@@ -227,25 +301,31 @@ const Profile = () => {
       {/* Certificates */}
       {activeTab === 'certificates' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {certificates.map(certificate => (
-            <div key={certificate.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="flex items-center justify-center mb-4">
-                <div className="p-3 bg-primary/10 rounded-full">
-                  <Award size={24} className="text-primary" />
+          {certificates.length > 0 ? (
+            certificates.map(certificate => (
+              <div key={certificate._id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Award size={24} className="text-primary" />
+                  </div>
+                </div>
+                <div className="text-center">
+                  <h3 className="font-medium mb-1">{certificate.name}</h3>
+                  <p className="text-sm text-gray-600">Issued by {certificate.issuer}</p>
+                  <p className="text-sm text-gray-600 mt-1">on {new Date(certificate.issueDate).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}</p>
+                </div>
+                <div className="mt-4 pt-4 border-t border-gray-100 flex justify-center">
+                  <button className="text-primary hover:text-primary/80 text-sm font-medium">
+                    View Certificate
+                  </button>
                 </div>
               </div>
-              <div className="text-center">
-                <h3 className="font-medium mb-1">{certificate.name}</h3>
-                <p className="text-sm text-gray-600">Issued by {certificate.issuer}</p>
-                <p className="text-sm text-gray-600 mt-1">on {certificate.issueDate}</p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-center">
-                <button className="text-primary hover:text-primary/80 text-sm font-medium">
-                  View Certificate
-                </button>
-              </div>
-            </div>
-          ))}
+            ))
+          ) : null}
           
           <div className="bg-gray-50 p-6 rounded-lg border border-dashed border-gray-300 flex flex-col items-center justify-center text-center">
             <div className="p-3 bg-gray-200 rounded-full mb-4">

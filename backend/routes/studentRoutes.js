@@ -2,7 +2,9 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import Student from "../models/StudentDB.js"; // Ensure this is a JS file
+import Student from "../models/StudentDB.js";// Ensure this is a JS file
+import Certificate from "../models/CertificateSchema.js";
+import Course from "../models/CourseSchema.js";
 import multer from "multer";
 import path from "path";
 import Teacher from "../models/TeacherDB.js";
@@ -136,7 +138,7 @@ router.get("/profile", async (req, res) => {
   try {
 
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
       return res.status(401).json({ message: "Unauthorized: No token provided" });
     }
 
@@ -146,6 +148,7 @@ router.get("/profile", async (req, res) => {
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log(decoded); //------------------------------------------------------------------------------------
     } catch (error) {
       return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
     }
@@ -205,6 +208,94 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "Error deleting student", error: error.message });
   }
 });
+
+
+// Get enrolled courses with details including progress
+router.get('/courses', async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    
+    // Find the student with enrolled courses IDs
+    const student = await Student.findById(studentId).select('enrolledCourses');
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    
+    if (!student.enrolledCourses || student.enrolledCourses.length === 0) {
+      return res.json([]);
+    }
+    
+    // Find all courses that the student is enrolled in
+    const courses = await Course.find({
+      _id: { $in: student.enrolledCourses }
+    }).populate('teacher', 'name');
+    
+    // Calculate progress for each course (placeholder logic - customize to your needs)
+    // In a real application, you'd have a more sophisticated progress tracking system
+    const coursesWithProgress = await Promise.all(courses.map(async (course) => {
+      const courseObj = course.toObject();
+      
+      // Calculate a random progress for demonstration
+      // In a real application, you would calculate this based on completed lessons, quizzes, etc.
+      const totalLessons = course.lessons ? course.lessons.length : 0;
+      
+      // Placeholder: calculate random number of completed lessons (1 to totalLessons)
+      const completedLessons = totalLessons > 0 
+        ? Math.floor(Math.random() * totalLessons) + 1
+        : 0;
+      
+      // Calculate progress percentage
+      const progress = totalLessons > 0 
+        ? Math.round((completedLessons / totalLessons) * 100)
+        : 0;
+      
+      return {
+        _id: courseObj._id,
+        name: courseObj.name,
+        subject: courseObj.subject,
+        grade: courseObj.grade,
+        teacherName: courseObj.teacher ? courseObj.teacher.name : 'Unknown Teacher',
+        progress: progress
+      };
+    }));
+    
+    res.json(coursesWithProgress);
+  } catch (error) {
+    console.error('Error fetching enrolled courses:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+// Get certificates
+router.get('/certificates', async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    
+    // Find the student with certificate IDs
+    const student = await Student.findById(studentId).select('certificates');
+    
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+    
+    if (!student.certificates || student.certificates.length === 0) {
+      return res.json([]);
+    }
+    
+    // Find all certificates that belong to the student
+    const certificates = await Certificate.find({
+      _id: { $in: student.certificates }
+    });
+    
+    res.json(certificates);
+  } catch (error) {
+    console.error('Error fetching certificates:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 router.post('/verify-token', async (req, res) => {
   const token = req.headers['authorization']?.split(' ')[1]; // Get token from Authorization header
