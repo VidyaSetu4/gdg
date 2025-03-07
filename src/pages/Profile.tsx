@@ -245,6 +245,7 @@ const Profile = () => {
             <button className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
               <LogOut size={18} />
               <span>Sign Out</span>
+              
             </button>
           </div>
         </div>
