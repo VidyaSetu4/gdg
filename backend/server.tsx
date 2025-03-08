@@ -4,8 +4,9 @@ import path from "path";
 import { fileURLToPath } from 'url';
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import studentRoutes from "./routes/studentRoutes";
-import teacherRoutes from "./routes/teacherRoutes";
+import studentRoutes from "./routes/studentRoutes.js";
+import teacherRoutes from "./routes/teacherRoutes.js";
+import meetRoutes from "./routes/meetRoutes.js";
 import bodyParser from "body-parser";
 
 dotenv.config();
@@ -20,9 +21,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors({
     origin: "http://localhost:5173",
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
-
+    credentials: true
 }));
 app.use(bodyParser.json({ limit: "10mb" })); // Adjust limit as needed
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
@@ -36,6 +35,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Routes
 app.use("/api/auth", studentRoutes);
 app.use("/api/teacher", teacherRoutes);
+app.use("/api/meet", meetRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI!)
