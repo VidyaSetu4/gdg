@@ -39,6 +39,7 @@ const TeacherOnlineClasses = () => {
   });
   const [meetLink, setMeetLink] = useState('');
   const [error, setError] = useState('');
+  const [token, setToken] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,13 +49,15 @@ const TeacherOnlineClasses = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(''); // Reset error before making the request
+    setToken(localStorage.getItem('token') || '');
 
-    const { title, date, time, duration } = formData;
+    const {title, date, time, duration } = formData;
     const startTime = new Date(`${date}T${time}`).toISOString();
     const endTime = new Date(new Date(startTime).getTime() + parseInt(duration) * 60000).toISOString();
 
     try {
       const response = await axios.post<{ meetLink: string }>('http://localhost:5000/api/meet/create-meet', {
+        token,
         summary: title,
         startTime,
         endTime,

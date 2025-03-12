@@ -14,6 +14,12 @@ interface ICourse extends Document {
         resources?: string[];
         duration: number; // in minutes
     }[];
+    meetings: {
+        startTime: Date;
+        duration: number; // in minutes
+        endTime: Date;
+        hostName: string;
+    }[];
     enrolledStudents: mongoose.Types.ObjectId[];
     price?: number;
     thumbnail?: string;
@@ -38,6 +44,14 @@ const courseSchema = new Schema(
                 duration: { type: Number, required: true } // in minutes
             },
         ],
+        meetings: [
+            {
+                startTime: { type: Date, required: true },
+                duration: { type: Number, required: true }, // in minutes
+                endTime: { type: Date, required: true },
+                hostName: { type: String, required: true }
+            }
+        ],
         enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Student" }],
         price: { type: Number, default: 0 },
         thumbnail: { type: String, default: "" } // URL to the thumbnail image
@@ -45,5 +59,6 @@ const courseSchema = new Schema(
     { timestamps: true }
 );
 
+// Create and export the Course model
 const Course = mongoose.model<ICourse>("Course", courseSchema);
 export default Course;
