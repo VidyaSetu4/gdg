@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import Teacher from "../models/TeacherDB"; // Import the Teacher model
 import multer from "multer";
 import path from "path";
+import Course from "../models/CourseSchema";
 
 dotenv.config();
 const router = express.Router();
@@ -16,6 +17,7 @@ const storage = multer.diskStorage({
     cb(null, `${Date.now()}-${path.extname(file.originalname)}`);
   },
 });
+
 const upload = multer({
   storage,
   limits: { fileSize: 5000000 }, // 5MB limit
@@ -35,41 +37,59 @@ const upload = multer({
 // ✅ Teacher Signup
 router.post("/signup", async (req, res) => {
   try {
-    console.log("Received request from frontend!!!")
     const { name, email, password, phone, address, dateOfBirth, school, profilePicture, subjectSpeciality, certificates } = req.body;
-    console.log(req.body);
-    if (!name || !email || !password || !subjectSpeciality) {
+
+    // ✅ Validate required fields
+    if (!name || !email || !password || !subjectSpeciality?.trim()) {
       return res.status(400).json({ message: "Name, email, password, and subjectSpeciality are required" });
     }
 
+    // ✅ Check if teacher already exists
     const existingTeacher = await Teacher.findOne({ email });
     if (existingTeacher) {
       return res.status(400).json({ message: "Teacher already exists" });
     }
 
+    // ✅ Hash the password securely
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // ✅ Create the teacher document
     const newTeacher = new Teacher({
       name,
       email,
       password: hashedPassword,
       phone,
       address,
-      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
+      dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
       school,
       profilePicture,
-      subjectSpeciality,
+      subjectSpeciality: subjectSpeciality.trim(),
       certificates,
     });
 
     await newTeacher.save();
 
+    // ✅ Find and update course in one atomic operation
+    const updatedCourse = await Course.findOneAndUpdate(
+      { subject: subjectSpeciality.trim() }, // Case-sensitive match
+      { $push: { teacher: newTeacher._id } }, // Add teacher ID to array
+      { new: true } // Return updated course
+    );
+
+    if (updatedCourse) {
+      console.log(`✅ Assigned teacher ${newTeacher.name} to course ${updatedCourse.name}`);
+    } else {
+      console.warn(`⚠️ No course found for subject: '${subjectSpeciality.trim()}'`);
+    }
+
     res.status(201).json({ message: "Teacher registered successfully!" });
   } catch (error) {
-    console.error("Signup error:", error);
+    console.error("❌ Signup error:", error);
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
+
 
 // ✅ Teacher Login
 router.post("/login", async (req, res) => {
@@ -139,7 +159,7 @@ router.get("/profile", async (req, res) => {
       return res.status(404).json({ message: "Teacher not found" });
     }
 
-    res.json({ 
+    res.json({
       message: "Profile fetched successfully!",
       teacher
     });
