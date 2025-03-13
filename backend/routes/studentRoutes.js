@@ -2,12 +2,12 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import Student from "../models/StudentDB.js";// Ensure this is a JS file
-import Certificate from "../models/CertificateSchema.js";
-import Course from "../models/CourseSchema.js";
+import Student from "../models/StudentDB.ts";// Ensure this is a JS file
+import Certificate from "../models/CertificateSchema.ts";// Ensure this is a JS file
+import Course from "../models/CourseSchema.ts";
 import multer from "multer";
 import path from "path";
-import Teacher from "../models/TeacherDB.js";
+import Teacher from "../models/TeacherDB.ts";
 
 dotenv.config();
 const router = express.Router();

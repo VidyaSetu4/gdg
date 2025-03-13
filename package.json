@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite\" \"tsx backend/server.tsx\"",
+    "dev": "concurrently \"vite\" \"nodemon backend/server.ts\"",
     "start:backend": "tsx backend/server.tsx",
     "start:frontend": "vite",
     "build": "tsc",
