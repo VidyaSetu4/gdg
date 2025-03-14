@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import studentRoutes from "./routes/studentRoutes.js";
 import teacherRoutes from "./routes/teacherRoutes.js";
 import meetRoutes from "./routes/meetRoutes.js";
+import chatRoutes from "./routes/chat.js";
 import bodyParser from "body-parser";
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/api/auth", studentRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/meet", meetRoutes);
+app.use("/api/chat", chatRoutes);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI!)
