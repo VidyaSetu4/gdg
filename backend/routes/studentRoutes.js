@@ -12,6 +12,32 @@ import Teacher from "../models/TeacherDB.ts";
 dotenv.config();
 const router = express.Router();
 
+// Middleware for authentication
+const authenticateUser = (req, res, next) => {
+  try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith("Bearer")) {
+          return res.status(401).json({ message: "Unauthorized: No token provided" });
+      }
+
+      const token = authHeader.split(" ")[1];
+
+      // Verify JWT
+      let decoded;
+      try {
+          decoded = jwt.verify(token, process.env.JWT_SECRET);
+          console.log(decoded); // Debugging
+          req.user = decoded; // Attach decoded user info to request
+          next();
+      } catch (error) {
+          return res.status(401).json({ message: "Unauthorized: Invalid or expired token" });
+      }
+  } catch (err) {
+      res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
 // Configure Multer for Profile Image Upload
 const storage = multer.diskStorage({
   destination: "./uploads/profiles",
@@ -38,31 +64,63 @@ const upload = multer({
 // ✅ Student Signup
 router.post("/signup", async (req, res) => {
   try {
+    const { name, email, password, phone, address, dob, school, profilePic, enrolledCourses = [] } = req.body;
 
-    const { name, email, password, phone, address, dob, school, profilePic } = req.body;
-
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "Name, email, and password are required" });
+    if (!name || !email || !password || !dob || !school) {
+      return res.status(400).json({ message: "Name, email, password, date of birth, and school are required" });
     }
 
     const existingStudent = await Student.findOne({ email });
     if (existingStudent) {
       return res.status(400).json({ message: "Student already exists" });
     }
-    const todayDate = new Date().toLocaleDateString("en-GB"); // "dd/mm/yyyy"
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Parse dateOfBirth from "dd/mm/yyyy" to a valid Date object
+    const dobParts = dob.split('/');
+    const formattedDob = new Date(`${dobParts[2]}-${dobParts[1]}-${dobParts[0]}`);
+
+    // Set joinedDate to current date (or parse it if provided)
+    const joinedDate = new Date(); // Use current date as default
+
+
+    // ✅ Convert course names (if given) to ObjectIds
+    let courseIds = [];
+
+    if (enrolledCourses.length > 0) {
+      // Find all courses where the subject matches any selected subject
+      const courseDocs = await Course.find({ subject: { $in: enrolledCourses } });
+
+      if (courseDocs.length === 0) {
+        return res.status(400).json({ message: "No courses found for the selected subjects" });
+      }
+
+      // Extracting all course _ids for the selected subjects
+      courseIds = courseDocs.map(course => course._id);
+    }
+    console.log("Selected Course ID:",courseIds);
     const newStudent = new Student({
       name,
       email,
       password: hashedPassword,
       phone,
       address,
-      dateOfBirth: new Date(dob),
-      joinedDate: todayDate,
+      dateOfBirth: formattedDob,
+      joinedDate: joinedDate, // ✅ Ensure it's stored as Date
       school,
-      profilePicture: profilePic, // ✅ Save Base64 string directly
+      profilePicture: profilePic || "", // ✅ Default empty string if not provided
+      role: "student", // ✅ Explicit role
+      enrolledCourses : courseIds, // ✅ List of course IDs (if provided)
+      certificates: [],
+      attendance: [],
+      coursesCompleted: 0,
+      progress: courseIds.map(courseId => ({
+        course: courseId,
+        quizzesAttempted: 0,
+        quizzesPassed: 0,
+        overallScore: 0,
+      })),
     });
 
     await newStudent.save();
@@ -80,8 +138,7 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Check if user is a student or teacher
-    let user = await Student.findOne({ email });
+    let user = await Student.findOne({ email }).populate("enrolledCourses progress.course certificates");
     let role = "student";
 
     if (!user) {
@@ -93,16 +150,13 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Verify password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user._id, name:user.name, email: user.email, role }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id, name: user.name, email: user.email, role }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    // Send response with role-based data
     res.json({
       message: "Login successful",
       token,
@@ -117,6 +171,11 @@ router.post("/login", async (req, res) => {
           dateOfBirth: user.dateOfBirth,
           school: user.school,
           profilePicture: user.profilePicture,
+          enrolledCourses: user.enrolledCourses, // ✅ Include enrolled courses
+          certificates: user.certificates, // ✅ Include certificates
+          attendance: user.attendance, // ✅ Attendance tracking
+          coursesCompleted: user.coursesCompleted, // ✅ Completed courses count
+          progress: user.progress, // ✅ Include progress tracking
         }),
         ...(role === "teacher" && {
           qualifications: user.qualifications,
@@ -159,7 +218,7 @@ router.get("/profile", async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     }
 
-    res.json({ 
+    res.json({
       message: "Profile fetched successfully!",
       student
     });
@@ -214,42 +273,42 @@ router.delete("/:id", async (req, res) => {
 router.get('/courses', async (req, res) => {
   try {
     const studentId = req.user.id;
-    
+
     // Find the student with enrolled courses IDs
     const student = await Student.findById(studentId).select('enrolledCourses');
-    
+
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
-    
+
     if (!student.enrolledCourses || student.enrolledCourses.length === 0) {
       return res.json([]);
     }
-    
+
     // Find all courses that the student is enrolled in
     const courses = await Course.find({
       _id: { $in: student.enrolledCourses }
     }).populate('teacher', 'name');
-    
+
     // Calculate progress for each course (placeholder logic - customize to your needs)
     // In a real application, you'd have a more sophisticated progress tracking system
     const coursesWithProgress = await Promise.all(courses.map(async (course) => {
       const courseObj = course.toObject();
-      
+
       // Calculate a random progress for demonstration
       // In a real application, you would calculate this based on completed lessons, quizzes, etc.
       const totalLessons = course.lessons ? course.lessons.length : 0;
-      
+
       // Placeholder: calculate random number of completed lessons (1 to totalLessons)
-      const completedLessons = totalLessons > 0 
+      const completedLessons = totalLessons > 0
         ? Math.floor(Math.random() * totalLessons) + 1
         : 0;
-      
+
       // Calculate progress percentage
-      const progress = totalLessons > 0 
+      const progress = totalLessons > 0
         ? Math.round((completedLessons / totalLessons) * 100)
         : 0;
-      
+
       return {
         _id: courseObj._id,
         name: courseObj.name,
@@ -259,7 +318,7 @@ router.get('/courses', async (req, res) => {
         progress: progress
       };
     }));
-    
+
     res.json(coursesWithProgress);
   } catch (error) {
     console.error('Error fetching enrolled courses:', error);
@@ -267,28 +326,49 @@ router.get('/courses', async (req, res) => {
   }
 });
 
+// GET route to fetch enrolled subjects for a student
+router.get("/enrolled-subjects", authenticateUser, async (req, res) => {
+  try {
+    console.log("Request User ID:", req.user.id);  // Debugging user ID
+    const student = await Student.findOne({ _id: req.user.id }).populate("enrolledCourses", "subject");
+
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Extract subject names
+    const enrolledSubjects = student.enrolledCourses.map(course => course.subject);
+
+    res.json({ enrolledSubjects });
+  } catch (error) {
+    console.error("Error fetching enrolled subjects:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 
 // Get certificates
 router.get('/certificates', async (req, res) => {
   try {
     const studentId = req.user.id;
-    
+
     // Find the student with certificate IDs
     const student = await Student.findById(studentId).select('certificates');
-    
+
     if (!student) {
       return res.status(404).json({ message: 'Student not found' });
     }
-    
+
     if (!student.certificates || student.certificates.length === 0) {
       return res.json([]);
     }
-    
+
     // Find all certificates that belong to the student
     const certificates = await Certificate.find({
       _id: { $in: student.certificates }
     });
-    
+
     res.json(certificates);
   } catch (error) {
     console.error('Error fetching certificates:', error);
@@ -301,32 +381,32 @@ router.post('/verify-token', async (req, res) => {
   const token = req.headers['authorization']?.split(' ')[1]; // Get token from Authorization header
 
   if (!token) {
-      return res.status(401).json({ message: 'No token provided' });
+    return res.status(401).json({ message: 'No token provided' });
   }
 
   jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-      if (err) {
-          return res.status(403).json({ message: 'Failed to authenticate token' });
+    if (err) {
+      return res.status(403).json({ message: 'Failed to authenticate token' });
+    }
+
+    try {
+      // Find user in Student collection
+      let user = await Student.findOne({ _id: decoded.id });
+      console.log(decoded.id);
+      // If not found in Student, check in Teacher collection
+      if (!user) {
+        user = await Teacher.findOne({ _id: decoded.id });
       }
 
-      try {
-          // Find user in Student collection
-          let user = await Student.findOne({ _id: decoded.id });
-          console.log(decoded.id);
-          // If not found in Student, check in Teacher collection
-          if (!user) {
-              user = await Teacher.findOne({ _id: decoded.id });
-          }
-
-          if (!user) {
-              return res.status(404).json({ message: 'User not found' });
-          }
-          // Return user role
-          res.json({ role: user.role });
-      } catch (error) {
-          console.error("Error verifying token:", error);
-          res.status(500).json({ message: 'Internal server error' });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
       }
+      // Return user role
+      res.json({ role: user.role });
+    } catch (error) {
+      console.error("Error verifying token:", error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
   });
 });
 

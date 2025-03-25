@@ -14,7 +14,7 @@ import Login from './pages/Login.tsx';
 import LandingPage from './pages/LandingPage.tsx';
 import TeacherSignup from './pages/TeacherSignup.tsx';
 import TeacherOnlineClasses from './pages/Teacher_Meetings.tsx';
-import ProvideMaterials from './pages/Teacher_Materials.tsx';
+import TeacherUpload from './pages/Teacher_Materials.tsx';
 import ConductTests from './pages/Teacher_tests.tsx';
 import TeacherProfile from './pages/Teacher_profile.tsx';
 import TeacherAnalytics from './pages/Teacher_Analytics.tsx';
@@ -125,7 +125,7 @@ function App() {
               <>
                 {/* <Route path="/dashboard" element={<Layout><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} /> */}
                 <Route path="/dashboard" element={<Layout><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
-                <Route path="/materials" element={<Layout><ProvideMaterials /></Layout>} />
+                <Route path="/materials" element={<Layout><TeacherUpload /></Layout>} />
                 <Route path="/onlineClasses" element={<Layout><TeacherOnlineClasses /></Layout>} />
                 <Route path="/tests" element={<Layout><ConductTests /></Layout>} />
                 <Route path="/profile" element={<Layout><TeacherProfile /></Layout>} />

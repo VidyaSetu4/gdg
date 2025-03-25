@@ -20,7 +20,7 @@ export default function Signup() {
   const navigate = useNavigate();
 
   const availableCourses = [
-    "Math", 
+    "Mathematics", 
     "Science", 
     "History", 
     "Computer Science", 
@@ -68,7 +68,8 @@ export default function Signup() {
       dob: dobRef.current?.value || '',
       school: schoolRef.current?.value || '',
       password: password,
-      profilePic: profilePic,
+      enrolledCourses: courses, // Use the courses state
+      profilePic: profilePic || '' // Send profile pic as base64 string
     };
 
     try {
@@ -79,7 +80,7 @@ export default function Signup() {
       });
 
       const result = await response.json();
-      
+      console.log(response)
       if (response.ok) {
         setMessage("✅ Signup successful!");
         navigate("/login");
@@ -146,6 +147,27 @@ export default function Signup() {
           <div>
             <label htmlFor="school" className="block text-sm font-medium text-gray-700 mb-1">School</label>
             <input ref={schoolRef} type="text" id="school" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" required placeholder="Enter your school name" />
+          </div>
+
+          {/* Course Selection */}
+          <div>
+            <label htmlFor="courses" className="block text-sm font-medium text-gray-700 mb-1">Select Courses</label>
+            <select 
+              id="courses" 
+              multiple 
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg" 
+              onChange={handleCourseChange}
+              value={courses}
+            >
+              {availableCourses.map((course) => (
+                <option key={course} value={course}>{course}</option>
+              ))}
+            </select>
+            {courses.length > 0 && (
+              <div className="mt-2 text-sm text-gray-600">
+                Selected Courses: {courses.join(", ")}
+              </div>
+            )}
           </div>
 
           {/* Profile Picture Input */}

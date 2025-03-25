@@ -40,8 +40,8 @@ router.post("/signup", async (req, res) => {
     const { name, email, password, phone, address, dateOfBirth, school, profilePicture, subjectSpeciality, certificates } = req.body;
 
     // ✅ Validate required fields
-    if (!name || !email || !password || !subjectSpeciality?.trim()) {
-      return res.status(400).json({ message: "Name, email, password, and subjectSpeciality are required" });
+    if (!name || !email || !password || !subjectSpeciality?.length) {
+      return res.status(400).json({ message: "Name, email, password, and at least one subjectSpeciality are required" });
     }
 
     // ✅ Check if teacher already exists
@@ -50,39 +50,37 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "Teacher already exists" });
     }
 
-    // ✅ Hash the password securely
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     // ✅ Create the teacher document
     const newTeacher = new Teacher({
       name,
       email,
-      password: hashedPassword,
+      password, // Password will be hashed in the model's `pre("save")` middleware
       phone,
       address,
       dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null,
       school,
       profilePicture,
-      subjectSpeciality: subjectSpeciality.trim(),
-      certificates,
+      subjectSpeciality: Array.isArray(subjectSpeciality) ? subjectSpeciality : [subjectSpeciality.trim()], // Ensure array
+      certificates: Array.isArray(certificates)
+        ? certificates.map(cert => ({
+            name: cert.name,
+            issuedBy: cert.issuedBy,
+            issueDate: new Date(cert.issueDate),
+            certificateFile: cert.certificateFile,
+          }))
+        : [],
     });
 
     await newTeacher.save();
 
     // ✅ Find and update course in one atomic operation
-    const updatedCourse = await Course.findOneAndUpdate(
-      { subject: subjectSpeciality.trim() }, // Case-sensitive match
-      { $push: { teacher: newTeacher._id } }, // Add teacher ID to array
-      { new: true } // Return updated course
+    await Course.updateMany(
+      { subject: { $in: newTeacher.subjectSpeciality } }, // Match courses with any of the subjects
+      { $push: { teacher: newTeacher._id } } // Add teacher ID to each course
     );
 
-    if (updatedCourse) {
-      console.log(`✅ Assigned teacher ${newTeacher.name} to course ${updatedCourse.name}`);
-    } else {
-      console.warn(`⚠️ No course found for subject: '${subjectSpeciality.trim()}'`);
-    }
-
     res.status(201).json({ message: "Teacher registered successfully!" });
+
   } catch (error) {
     console.error("❌ Signup error:", error);
     res.status(500).json({ message: "Internal server error", error: error.message });
@@ -102,10 +100,15 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // Check if password is correct
-    const isMatch = await bcrypt.compare(password, teacher.password);
+    // Check if password is correct using the `comparePassword` method from the model
+    const isMatch = await teacher.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
+    }
+
+    // Ensure JWT secret is set
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not set in environment variables");
     }
 
     // Generate JWT token
@@ -134,6 +137,7 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
 
 // ✅ Get Teacher Profile
 router.get("/profile", async (req, res) => {

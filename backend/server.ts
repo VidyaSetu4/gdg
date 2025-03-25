@@ -9,7 +9,7 @@ import teacherRoutes from "./routes/teacherRoutes.js";
 import meetRoutes from "./routes/meetRoutes.js";
 import chatRoutes from "./routes/chat.js";
 import bodyParser from "body-parser";
-
+import course from "./routes/course.js";
 dotenv.config();
 
 // ES Module fix for __dirname
@@ -38,6 +38,7 @@ app.use("/api/auth", studentRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/meet", meetRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/course",course);
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI!)

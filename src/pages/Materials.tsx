@@ -1,196 +1,176 @@
-import React, { useState } from 'react';
-import { FileText, Download, Search, BookOpen, FileType2, Film, BookMarked, Filter } from 'lucide-react';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Download, Eye, Loader2, AlertTriangle } from "lucide-react";
+
+interface Note {
+  courseName: string;
+  subject: string;
+  fileName: string;
+  fileUrl: string;
+  uploadedAt: string;
+}
 
 const Materials = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('all');
-  const [selectedType, setSelectedType] = useState('all');
-
-  const subjects = [
-    { id: 'all', name: 'All Subjects' },
-    { id: 'math', name: 'Mathematics' },
-    { id: 'science', name: 'Science' },
-    { id: 'english', name: 'English' },
-    { id: 'history', name: 'History' },
-    { id: 'geography', name: 'Geography' },
-  ];
-
-  const materialTypes = [
-    { id: 'all', name: 'All Types' },
-    { id: 'pdf', name: 'PDF Documents' },
-    { id: 'video', name: 'Video Tutorials' },
-    { id: 'presentation', name: 'Presentations' },
-    { id: 'worksheet', name: 'Worksheets' },
-  ];
-
-  const materials = [
-    { 
-      id: 1, 
-      title: 'Algebra Fundamentals', 
-      subject: 'math', 
-      type: 'pdf', 
-      size: '2.4 MB',
-      date: 'June 10, 2025',
-      description: 'Comprehensive guide to basic algebraic concepts and equations.',
-      icon: <FileText size={20} className="text-red-500" />
-    },
-    { 
-      id: 2, 
-      title: 'Cell Structure and Function', 
-      subject: 'science', 
-      type: 'pdf', 
-      size: '3.1 MB',
-      date: 'June 8, 2025',
-      description: 'Detailed notes on cell biology, structure, and functions.',
-      icon: <FileText size={20} className="text-red-500" />
-    },
-    { 
-      id: 3, 
-      title: 'Grammar Rules Explained', 
-      subject: 'english', 
-      type: 'pdf', 
-      size: '1.8 MB',
-      date: 'June 5, 2025',
-      description: 'Complete guide to English grammar rules with examples.',
-      icon: <FileText size={20} className="text-red-500" />
-    },
-    { 
-      id: 4, 
-      title: 'Geometry Basics Video Tutorial', 
-      subject: 'math', 
-      type: 'video', 
-      size: '45 MB',
-      date: 'June 3, 2025',
-      description: 'Video tutorial explaining basic geometric concepts and formulas.',
-      icon: <Film size={20} className="text-blue-500" />
-    },
-    { 
-      id: 5, 
-      title: 'Ancient Civilizations Presentation', 
-      subject: 'history', 
-      type: 'presentation', 
-      size: '5.2 MB',
-      date: 'May 28, 2025',
-      description: 'Slide presentation on major ancient civilizations and their contributions.',
-      icon: <FileType2 size={20} className="text-green-500" />
-    },
-    { 
-      id: 6, 
-      title: 'Science Lab Worksheet', 
-      subject: 'science', 
-      type: 'worksheet', 
-      size: '1.2 MB',
-      date: 'May 25, 2025',
-      description: 'Practice worksheet for science experiments and observations.',
-      icon: <BookMarked size={20} className="text-purple-500" />
-    },
-    { 
-      id: 7, 
-      title: 'World Geography Notes', 
-      subject: 'geography', 
-      type: 'pdf', 
-      size: '4.5 MB',
-      date: 'May 20, 2025',
-      description: 'Comprehensive notes on world geography, continents, and major landmarks.',
-      icon: <FileText size={20} className="text-red-500" />
-    },
-  ];
-
-  const filteredMaterials = materials.filter(material => {
-    const matchesSearch = material.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          material.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSubject = selectedSubject === 'all' || material.subject === selectedSubject;
-    const matchesType = selectedType === 'all' || material.type === selectedType;
-    
-    return matchesSearch && matchesSubject && matchesType;
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortConfig, setSortConfig] = useState<{key: keyof Note, direction: 'asc' | 'desc'}>({
+    key: 'uploadedAt',
+    direction: 'desc'
   });
 
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:5000/api/course/notes", {
+          headers: { Authorization: `${token}` },
+        });
+
+        if (response.data && Array.isArray(response.data.notes)) {
+          setNotes(response.data.notes);
+        } else {
+          setNotes([]);
+        }
+      } catch (error) {
+        console.error("Error fetching notes:", error);
+        setError("Failed to fetch materials.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNotes();
+  }, []);
+
+  // Sorting function
+  const sortedNotes = [...notes].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+
+  // Filtering function
+  const filteredNotes = sortedNotes.filter(note => 
+    note.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    note.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    note.fileName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Handle sorting
+  const handleSort = (key: keyof Note) => {
+    setSortConfig(prevConfig => ({
+      key,
+      direction: prevConfig.key === key && prevConfig.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-800">Study Materials</h1>
-      
-      {/* Search and Filters */}
-      <div className="bg-white p-4 rounded-lg shadow-sm">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1 relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={18} className="text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search materials..."
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <BookOpen size={18} className="text-gray-400" />
-              </div>
-              <select
-                className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary appearance-none bg-white"
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-              >
-                {subjects.map(subject => (
-                  <option key={subject.id} value={subject.id}>{subject.name}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Filter size={18} className="text-gray-400" />
-              </div>
-              <select
-                className="pl-10 pr-8 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary appearance-none bg-white"
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-              >
-                {materialTypes.map(type => (
-                  <option key={type.id} value={type.id}>{type.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
+    <div className="container mx-auto px-4 py-6">
+      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        {/* Header */}
+        <div className="bg-blue-600 text-white p-4">
+          <h2 className="text-2xl font-bold flex items-center">
+            <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+            </svg>
+            Uploaded Materials
+          </h2>
         </div>
-      </div>
-      
-      {/* Materials List */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-        {filteredMaterials.length > 0 ? (
-          <div className="divide-y divide-gray-100">
-            {filteredMaterials.map(material => (
-              <div key={material.id} className="p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-gray-100 rounded">
-                    {material.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium">{material.title}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{material.description}</p>
-                    <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                      <span>{material.size}</span>
-                      <span>{material.date}</span>
-                    </div>
-                  </div>
-                  <button className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors">
-                    <Download size={20} />
-                  </button>
-                </div>
-              </div>
-            ))}
+
+        {/* Search and Loading */}
+        <div className="p-4 bg-gray-50 flex items-center space-x-4">
+          <input 
+            type="text" 
+            placeholder="Search materials..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {loading && <Loader2 className="animate-spin text-blue-600" />}
+        </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 flex items-center">
+            <AlertTriangle className="text-red-500 mr-3" />
+            <p className="text-red-700">{error}</p>
           </div>
-        ) : (
-          <div className="p-8 text-center">
-            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <FileText size={24} className="text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-800 mb-1">No materials found</h3>
-            <p className="text-gray-600">Try adjusting your search or filters</p>
+        )}
+
+        {/* No Materials State */}
+        {!loading && filteredNotes.length === 0 && (
+          <div className="text-center py-8 bg-gray-100">
+            <p className="text-gray-600">No materials available.</p>
+          </div>
+        )}
+
+        {/* Materials Table */}
+        {!loading && filteredNotes.length > 0 && (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-100 border-b">
+                <tr>
+                  {(['courseName', 'subject', 'fileName', 'uploadedAt'] as (keyof Note)[]).map((key) => (
+                    <th 
+                      key={key}
+                      onClick={() => handleSort(key)}
+                      className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors"
+                    >
+                      <div className="flex items-center">
+                        {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        <span className="ml-2">
+                          {sortConfig.key === key && (sortConfig.direction === 'asc' ? '▲' : '▼')}
+                        </span>
+                      </div>
+                    </th>
+                  ))}
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredNotes.map((note, index) => (
+                  <tr 
+                    key={index} 
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-4 py-4 whitespace-nowrap">{note.courseName}</td>
+                    <td className="px-4 py-4 whitespace-nowrap">{note.subject}</td>
+                    <td className="px-4 py-4 whitespace-nowrap">{note.fileName}</td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      {new Date(note.uploadedAt).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <a 
+                          href={note.fileUrl} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 transition-colors flex items-center"
+                        >
+                          <Eye className="mr-1" size={16} />
+                          View
+                        </a>
+                        <a 
+                          href={note.fileUrl} 
+                          download
+                          className="text-green-600 hover:text-green-800 transition-colors flex items-center"
+                        >
+                          <Download className="mr-1" size={16} />
+                          Download
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>

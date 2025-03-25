@@ -1,93 +1,124 @@
-import React from 'react';
-import { FileText, Download, Upload, Search } from 'lucide-react';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const ProvideMaterials = () => {
-  const materials = [
-    {
-      id: 1,
-      title: 'Algebra Fundamentals',
-      type: 'PDF',
-      size: '2.5 MB',
-      uploadedDate: '2024-03-15',
-      downloads: 125,
-      url: '#',
-    },
-    {
-      id: 2,
-      title: 'Geometry Practice Problems',
-      type: 'PDF',
-      size: '1.8 MB',
-      uploadedDate: '2024-03-14',
-      downloads: 98,
-      url: '#',
-    },
-    {
-      id: 3,
-      title: 'Calculus Study Guide',
-      type: 'PDF',
-      size: '3.2 MB',
-      uploadedDate: '2024-03-13',
-      downloads: 156,
-      url: '#',
-    },
-  ];
+// Define the expected structure for a course
+interface Course {
+  _id: string;
+  name: string;
+  subject: string;
+}
+
+const TeacherUpload = () => {
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<string>("");
+  const [file, setFile] = useState<File | null>(null);
+
+  // Fetch Courses on Mount
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+
+        const response = await axios.get<{ courses: Course[] }>(
+          "http://localhost:5000/api/course/courses",
+          { headers: { Authorization: token } }
+        );
+
+        setCourses(response.data.courses);
+      } catch (error) {
+        console.error("Failed to fetch courses:", error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // Handle File Upload
+  const handleUpload = async () => {
+    if (!selectedCourse || !file) {
+      alert("Please select a course and a file!");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("courseId", selectedCourse);
+    formData.append("file", file);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Unauthorized! Please login.");
+        return;
+      }
+
+      await axios.post("http://localhost:5000/api/course/upload", formData, {
+        headers: { Authorization: token, "Content-Type": "multipart/form-data" },
+      });
+
+      alert("File uploaded successfully!");
+      setFile(null); // Reset file after upload
+      setSelectedCourse(""); // Reset selection
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Upload failed!");
+    }
+  };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Study Materials</h1>
-        <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 flex items-center">
-          <Upload size={20} className="mr-2" />
-          Upload Material
-        </button>
-      </div>
+    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+        Upload Course Materials
+      </h2>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
-        <div className="relative">
-          <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search materials..."
-            className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      <div className="space-y-4">
+        {/* Course Selection Dropdown */}
+        <div>
+          <label htmlFor="course-select" className="block text-sm font-medium text-gray-700 mb-2">
+            Select Course
+          </label>
+          <select
+            id="course-select"
+            value={selectedCourse}
+            onChange={(e) => setSelectedCourse(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select a Course</option>
+            {courses.map((course) => (
+              <option key={course._id} value={course._id}>
+                {course.name} ({course.subject})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* File Upload Input */}
+        <div>
+          <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-2">
+            Choose File
+          </label>
+          <input 
+            id="file-upload"
+            type="file" 
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm file:mr-4 file:rounded-md file:border-0 file:bg-blue-500 file:px-4 file:py-2 file:text-white hover:file:bg-blue-600"
           />
         </div>
-      </div>
 
-      <div className="grid gap-4">
-        {materials.map((material) => (
-          <div
-            key={material.id}
-            className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between"
-          >
-            <div className="flex items-center">
-              <div className="bg-indigo-100 p-3 rounded-lg">
-                <FileText size={24} className="text-indigo-600" />
-              </div>
-              <div className="ml-4">
-                <h3 className="text-lg font-semibold">{material.title}</h3>
-                <div className="flex items-center text-sm text-gray-500 mt-1">
-                  <span>{material.type}</span>
-                  <span className="mx-2">•</span>
-                  <span>{material.size}</span>
-                  <span className="mx-2">•</span>
-                  <span>Uploaded on {material.uploadedDate}</span>
-                  <span className="mx-2">•</span>
-                  <span>{material.downloads} downloads</span>
-                </div>
-              </div>
-            </div>
-            <a
-              href={material.url}
-              className="flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-            >
-              <Download size={16} className="mr-2" />
-              Download
-            </a>
-          </div>
-        ))}
+        {/* Upload Button */}
+        <button 
+          onClick={handleUpload} 
+          disabled={!selectedCourse || !file}
+          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+        >
+          Upload
+        </button>
       </div>
     </div>
   );
 };
 
-export default ProvideMaterials;
+export default TeacherUpload;

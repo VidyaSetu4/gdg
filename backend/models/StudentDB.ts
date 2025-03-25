@@ -21,6 +21,15 @@ interface IStudent extends Document {
     coursesCompleted: number;
     createdAt?: Date;
     updatedAt?: Date;
+    progress: [
+        {
+            course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
+            quizzesAttempted: Number,
+            quizzesPassed: Number,
+            overallScore: Number // AI-generated score
+        }
+    ];
+    
 }
 
 // Define the Mongoose schema
@@ -45,6 +54,15 @@ const studentSchema = new Schema<IStudent>(
             },
         ],
         coursesCompleted: { type: Number, default: 0 },
+        progress: [
+            {
+                course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
+                quizzesAttempted: Number,
+                quizzesPassed: Number,
+                overallScore: Number // AI-generated score
+            }
+        ]
+        
     },
     { timestamps: true } // Automatically adds createdAt and updatedAt fields
 );
