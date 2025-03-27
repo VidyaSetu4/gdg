@@ -10,12 +10,21 @@ interface Note {
   uploadedAt: string;
 }
 
+const getPdfViewerLink = (url: string) => {
+  const match = url.match(/(?:\/d\/|id=)([^\/?]+)/);
+  if (match) {
+    return `https://drive.google.com/file/d/${match[1]}/view`;
+  }
+  return url.endsWith(".pdf") ? url : `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+};
+
+
 const Materials = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [sortConfig, setSortConfig] = useState<{key: keyof Note, direction: 'asc' | 'desc'}>({
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Note, direction: 'asc' | 'desc' }>({
     key: 'uploadedAt',
     direction: 'desc'
   });
@@ -55,7 +64,7 @@ const Materials = () => {
   });
 
   // Filtering function
-  const filteredNotes = sortedNotes.filter(note => 
+  const filteredNotes = sortedNotes.filter(note =>
     note.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
     note.fileName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -84,9 +93,9 @@ const Materials = () => {
 
         {/* Search and Loading */}
         <div className="p-4 bg-gray-50 flex items-center space-x-4">
-          <input 
-            type="text" 
-            placeholder="Search materials..." 
+          <input
+            type="text"
+            placeholder="Search materials..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-grow px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -116,7 +125,7 @@ const Materials = () => {
               <thead className="bg-gray-100 border-b">
                 <tr>
                   {(['courseName', 'subject', 'fileName', 'uploadedAt'] as (keyof Note)[]).map((key) => (
-                    <th 
+                    <th
                       key={key}
                       onClick={() => handleSort(key)}
                       className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-200 transition-colors"
@@ -136,8 +145,8 @@ const Materials = () => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredNotes.map((note, index) => (
-                  <tr 
-                    key={index} 
+                  <tr
+                    key={index}
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-4 py-4 whitespace-nowrap">{note.courseName}</td>
@@ -148,17 +157,19 @@ const Materials = () => {
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex space-x-2">
-                        <a 
-                          href={note.fileUrl} 
-                          target="_blank" 
+                        <a
+                          href={getPdfViewerLink(note.fileUrl)}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 transition-colors flex items-center"
                         >
                           <Eye className="mr-1" size={16} />
                           View
                         </a>
-                        <a 
-                          href={note.fileUrl} 
+
+
+                        <a
+                          href={note.fileUrl}
                           download
                           className="text-green-600 hover:text-green-800 transition-colors flex items-center"
                         >
