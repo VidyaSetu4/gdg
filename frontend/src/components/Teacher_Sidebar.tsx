@@ -1,50 +1,76 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Video, 
-  FileText, 
-  TestTube2, 
-  BarChart3, 
-  UserCircle 
+import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  LayoutDashboard,
+  Video,
+  FileText,
+  ClipboardList,
+  BarChart2,
+  User,
+  Home
 } from 'lucide-react';
 
-const Sidebar = () => {
+interface TeacherSidebarProps {
+  activePage: string;
+  setActivePage: (page: string) => void;
+}
+
+const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ activePage, setActivePage }) => {
+  const navigate = useNavigate();
+  const location = useLocation(); // Get the current URL
+
   const menuItems = [
-    { icon: LayoutDashboard, text: 'Dashboard', path: '/' },
-    { icon: Video, text: 'Online Classes', path: '/online-classes' },
-    { icon: FileText, text: 'Materials', path: '/materials' },
-    { icon: TestTube2, text: 'Tests', path: '/tests' },
-    { icon: BarChart3, text: 'Analytics', path: '/analytics' },
-    { icon: UserCircle, text: 'Profile', path: '/profile' },
+    { id: 'dashboard', label: 'Dashboard', icon: <Home size={20} />, path: '/dashboard' },
+    { id: 'onlineClasses', label: 'Online Classes', icon: <Video size={20} />, path: '/onlineClasses' },
+    { id: 'materials', label: 'Materials', icon: <FileText size={20} />, path: '/materials' },
+    { id: 'tests', label: 'Tests', icon: <ClipboardList size={20} />, path: '/tests' },
+    { id: 'progress', label: 'Analytics', icon: <BarChart2 size={20} />, path: '/progress' },
+    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' },
   ];
 
   return (
-    <div className="w-64 bg-indigo-700 text-white p-6">
-      <div className="mb-8">
+    <div className="h-full bg-indigo-700 text-white p-4 flex flex-col">
+      <div className="flex items-center gap-2 mb-8 mt-2">
+        <LayoutDashboard size={28} />
         <h1 className="text-2xl font-bold">VidyaSetu</h1>
-        <p className="text-indigo-200 text-sm">Teacher Dashboard</p>
       </div>
-      <nav>
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                isActive
-                  ? 'bg-indigo-800 text-white'
-                  : 'text-indigo-100 hover:bg-indigo-600'
-              }`
-            }
-          >
-            <item.icon size={20} />
-            <span>{item.text}</span>
-          </NavLink>
-        ))}
+
+      <nav className="flex-1">
+        <ul className="space-y-2">
+          {menuItems.map((item) => (
+            <li key={item.id}>
+              <button
+                onClick={() => {
+                  setActivePage(item.id);
+                  navigate(item.path);
+                }}
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
+                  activePage === item.id
+                    ? 'bg-white/20 font-medium'
+                    : 'hover:bg-white/10'
+                }`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </nav>
+
+      <div className="mt-auto pt-4 border-t border-white/20">
+        <div className="flex items-center gap-3 p-2">
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <User size={20} />
+          </div>
+          <div>
+            <p className="font-medium">Teacher Name</p>
+            <p className="text-sm text-white/70">Subject Expert</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Sidebar;
+export default TeacherSidebar;

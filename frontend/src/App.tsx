@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import Sidebar from './components/Sidebar.tsx';
+import TeacherSidebar from './components/Teacher_Sidebar.tsx';
 import Dashboard from './pages/Dashboard';
 import OnlineClasses from './pages/OnlineClasses';
 import Materials from './pages/Materials';
@@ -20,15 +21,17 @@ import TeacherProfile from './pages/Teacher_profile.tsx';
 import TeacherAnalytics from './pages/Teacher_Analytics.tsx';
 import TeacherDashboard from './pages/Teacher_Dashboard.tsx';
 
-function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+  children: ReactNode;
+  userRole: string;
+}
+
+function Layout({ children, userRole }:LayoutProps) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activePage, setActivePage] = useState('/dashboard');
 
-  const hideSidebar =
-    location.pathname === '/signup/student' ||
-    location.pathname === '/signup/teacher' ||
-    location.pathname === '/login';
+  const hideSidebar = ['/signup/student', '/signup/teacher', '/login'].includes(location.pathname);
 
   if (hideSidebar) {
     return <div className="h-screen w-screen flex justify-center items-center">{children}</div>;
@@ -47,9 +50,14 @@ function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Sidebar */}
-      {!hideSidebar && (
+      {!hideSidebar && userRole === 'student' && (
         <div className={`fixed inset-y-0 w-64 bg-white shadow-lg lg:block z-10 ${mobileMenuOpen ? 'block' : 'hidden'}`}>
           <Sidebar activePage={activePage} setActivePage={setActivePage} />
+        </div>
+      )}
+      {!hideSidebar && userRole === 'teacher' && (
+        <div className={`fixed inset-y-0 w-64 bg-white shadow-lg lg:block z-10 ${mobileMenuOpen ? 'block' : 'hidden'}`}>
+          <TeacherSidebar activePage={activePage} setActivePage={setActivePage} />
         </div>
       )}
 
@@ -108,35 +116,28 @@ function App() {
 
         {/* Protected Routes */}
         {isAuthenticated ? (
-          <>
-            {userRole === 'student' ? (
-              <>
-                <Route index element={<Layout><Dashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
-                <Route path="/dashboard" element={<Layout><Dashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
-                <Route path="/onlineClasses" element={<Layout><OnlineClasses /></Layout>} />
-                <Route path="/materials" element={<Layout><Materials /></Layout>} />
-                <Route path="/tests" element={<Layout><Tests/></Layout>} />
-                <Route path="/progress" element={<Layout><Progress /></Layout>} />
-                <Route path="/profile" element={<Layout><Profile /></Layout>} /> 
-                <Route path="/chatbot" element={<Layout><Chatbot /></Layout>} /> 
-                <Route path="*" element={<Navigate to="/dashboard" />} />
-              </>
-            ) : userRole === 'teacher' ? (
-              <>
-                {/* <Route path="/dashboard" element={<Layout><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} /> */}
-                <Route path="/dashboard" element={<Layout><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
-                <Route path="/materials" element={<Layout><TeacherUpload /></Layout>} />
-                <Route path="/onlineClasses" element={<Layout><TeacherOnlineClasses /></Layout>} />
-                <Route path="/tests" element={<Layout><ConductTests /></Layout>} />
-                <Route path="/profile" element={<Layout><TeacherProfile /></Layout>} />
-                <Route path="/progress" element={<Layout><TeacherAnalytics /></Layout>} />
-                <Route path="/chatbot" element={<Layout><Chatbot /></Layout>} /> 
-                <Route path="*" element={<Navigate to="/onlineClasses" />} />
-              </>
-            ) : (
+          userRole === 'student' ? (
+            <>
+              <Route path="/dashboard" element={<Layout userRole={userRole}><Dashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
+              <Route path="/onlineClasses" element={<Layout userRole={userRole}><OnlineClasses /></Layout>} />
+              <Route path="/materials" element={<Layout userRole={userRole}><Materials /></Layout>} />
+              <Route path="/tests" element={<Layout userRole={userRole}><Tests /></Layout>} />
+              <Route path="/progress" element={<Layout userRole={userRole}><Progress /></Layout>} />
+              <Route path="/profile" element={<Layout userRole={userRole}><Profile /></Layout>} />
+              <Route path="/chatbot" element={<Layout userRole={userRole}><Chatbot /></Layout>} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
-            )}
-          </>
+            </>
+          ) : (
+            <>
+              <Route path="/dashboard" element={<Layout userRole={userRole ?? ''}><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
+              <Route path="/materials" element={<Layout userRole={userRole ?? ''}><TeacherUpload /></Layout>} />
+              <Route path="/onlineClasses" element={<Layout userRole={userRole ?? ''}><TeacherOnlineClasses /></Layout>} />
+              <Route path="/tests" element={<Layout userRole={userRole ?? ''}><ConductTests /></Layout>} />
+              <Route path="/profile" element={<Layout userRole={userRole ?? ''}><TeacherProfile /></Layout>} />
+              <Route path="/progress" element={<Layout userRole={userRole ?? ''}><TeacherAnalytics /></Layout>} />
+              <Route path="*" element={<Navigate to="/onlineClasses" />} />
+            </>
+          )
         ) : (
           <Route path="*" element={<Navigate to="/" />} />
         )}
