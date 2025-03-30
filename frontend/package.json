@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite\" \"tsx backend/server.js\"",
-    "start:backend": "tsx backend/server.js",
+    "dev": "concurrently \"vite\" \"tsx ../backend/server.js\"",
+    "start:backend": "tsx ../backend/server.js",
     "start:frontend": "vite",
     "build": "tsc",
     "start": "nodemon dist/server.js"

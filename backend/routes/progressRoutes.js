@@ -1,7 +1,7 @@
 
 import express from "express";
-import StudentProgress from "../models/StudentProgress";
-import { fetchUser } from "../middleware/authMiddleware";
+import StudentProgress from "../models/StudentProgress.js";
+import { fetchUser } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Mark a lesson as completed

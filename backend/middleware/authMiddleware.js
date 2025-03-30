@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Student = require("../models/StudentDB.ts");
-const Teacher = require("../models/TeacherDB");
+const Teacher = require("../models/TeacherDB.ts");
 require("dotenv").config();
 
 const authMiddleware = async (req, res, next) => {

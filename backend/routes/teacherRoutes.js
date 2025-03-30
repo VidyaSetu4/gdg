@@ -2,10 +2,10 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import Teacher from "../models/TeacherDB.ts"; // Import the Teacher model
+import Teacher from "../models/TeacherDB.js"; // Import the Teacher model
 import multer from "multer";
 import path from "path";
-import Course from "../models/CourseSchema.ts";
+import Course from "../models/CourseSchema.js";
 
 dotenv.config();
 const router = express.Router();

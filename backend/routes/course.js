@@ -1,11 +1,11 @@
 import express from "express";
 import mongoose from "mongoose";
-import Student from "../models/StudentDB";
-import Course from "../models/CourseSchema"; // Import your Course model
-import Teacher from "../models/TeacherDB"; // Import your Teacher model
-import supabase from "../supabaseClient";
+import Student from "../models/StudentDB.js";
+import Course from "../models/CourseSchema.js"; // Import your Course model
+import Teacher from "../models/TeacherDB.js"; // Import your Teacher model
+import supabase from "../supabaseClient.js";
 import multer from "multer";
-import fetchUser from "../middleware/fetchuser";
+import fetchUser from "../middleware/fetchuser.js";
 import jwt from "jsonwebtoken";
 const router = express.Router();
 
