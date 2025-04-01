@@ -211,45 +211,45 @@ function App() {
                 title: "Interactive Learning",
                 desc: "Engage with interactive content that makes learning fun and effective.",
                 img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80",
-                shadow: "hover:shadow-[0_4px_20px_#4285F4]", // Blue
               },
               {
                 title: "Personalized Learning",
                 desc: "Tailor your learning experience to fit your individual needs and pace.",
                 img: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80",
-                shadow: "hover:shadow-[0_4px_20px_#EA4335]", // Red
               },
               {
                 title: "24/7 Support",
                 desc: "Get assistance anytime with our dedicated support team and resources.",
                 img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80",
-                shadow: "hover:shadow-[0_4px_20px_#FBBC05]", // Yellow
               },
               {
                 title: "Community Engagement",
                 desc: "Join a community of learners and educators to share knowledge and experiences.",
                 img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80",
-                shadow: "hover:shadow-[0_4px_20px_#34A853]", // Green
               },
               {
                 title: "Resource Sharing",
                 desc: "Access a wealth of resources, including study materials and tools.",
                 img: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80",
-                shadow: "hover:shadow-[0_4px_20px_#EA4335]", // Red
               },
               {
                 title: "Data Insights",
                 desc: "Utilize analytics to track progress and improve learning outcomes.",
                 img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80",
-                shadow: "hover:shadow-[0_4px_20px_#4285F4]", // Blue
               },
             ].map((feature, index) => (
               <div
                 key={index}
-                className={`bg-gray-100 rounded-lg p-6 shadow-md transition-transform duration-300 hover:scale-105 ${feature.shadow}`}
-                >
-                <img src={feature.img} alt={feature.title} className="w-full h-32 object-cover rounded-lg mb-4" />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">{feature.title}</h3>
+                className="bg-gray-100 rounded-lg p-6 shadow-md transition-transform duration-300 hover:scale-105 hover:bg-white"
+              >
+                <img
+                  src={feature.img}
+                  alt={feature.title}
+                  className="w-full h-32 object-cover rounded-lg mb-4"
+                />
+                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                  {feature.title}
+                </h3>
                 <p className="text-gray-600">{feature.desc}</p>
               </div>
             ))}
@@ -269,34 +269,52 @@ function App() {
               {
                 title: "Students",
                 icon: <School className="h-12 w-12 text-red-600 mx-auto mb-6" />,
-                benefits: ["Flexible learning schedule", "Personalized attention", "Quality study materials", "Peer learning opportunities"],
-                shadow: "hover:shadow-[0_4px_20px_#EA4335]", // Red
+                benefits: [
+                  "Flexible learning schedule",
+                  "Personalized attention",
+                  "Quality study materials",
+                  "Peer learning opportunities",
+                ],
               },
               {
                 title: "Teachers",
                 icon: <GraduationCap className="h-12 w-12 text-blue-600 mx-auto mb-6" />,
-                benefits: ["Digital teaching tools", "Student progress tracking", "Resource sharing", "Professional development"],
-                shadow: "hover:shadow-[0_4px_20px_#4285F4]", // Blue
+                benefits: [
+                  "Digital teaching tools",
+                  "Student progress tracking",
+                  "Resource sharing",
+                  "Professional development",
+                ],
               },
               {
                 title: "Institutions",
                 icon: <Building2 className="h-12 w-12 text-yellow-600 mx-auto mb-6" />,
-                benefits: ["Infrastructure savings", "Wider reach", "Data-driven insights", "Quality standardization"],
-                shadow: "hover:shadow-[0_4px_20px_#FBBC05]", // Yellow
+                benefits: [
+                  "Infrastructure savings",
+                  "Wider reach",
+                  "Data-driven insights",
+                  "Quality standardization",
+                ],
               },
               {
                 title: "Communities",
                 icon: <Users2 className="h-12 w-12 text-green-600 mx-auto mb-6" />,
-                benefits: ["Improved literacy rates", "Skill development", "Economic growth", "Social empowerment"],
-                shadow: "hover:shadow-[0_4px_20px_#34A853]", // Green
+                benefits: [
+                  "Improved literacy rates",
+                  "Skill development",
+                  "Economic growth",
+                  "Social empowerment",
+                ],
               },
             ].map((group, index) => (
               <div
                 key={index}
-                className={`bg-white rounded-xl p-8 shadow-lg text-center transition-transform duration-300 hover:scale-105 ${group.shadow}`}
-                >
+                className="bg-white rounded-xl p-8 shadow-lg text-center transition-transform duration-300 hover:scale-105 hover:bg-gray-100"
+              >
                 {group.icon}
-                <h3 className="text-xl font-bold text-gray-800 mb-4">{group.title}</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">
+                  {group.title}
+                </h3>
                 <ul className="text-gray-600 space-y-2">
                   {group.benefits.map((benefit, i) => (
                     <li key={i}>{benefit}</li>
