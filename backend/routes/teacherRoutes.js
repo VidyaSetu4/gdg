@@ -74,10 +74,15 @@ router.post("/signup", async (req, res) => {
     await newTeacher.save();
 
     // ✅ Find and update course in one atomic operation
-    await Course.updateMany(
+    const updateResult = await Course.updateMany(
       { subject: { $in: newTeacher.subjectSpeciality } }, // Match courses with any of the subjects
-      { $push: { teacher: newTeacher._id } } // Add teacher ID to each course
+      { $push: { teacher: { teacherId: newTeacher._id, subject: newTeacher.subjectSpeciality[0] } } } // Push the subject directly (not as an array)
     );
+
+    // Check if courses were updated
+    if (updateResult.nModified === 0) {
+      console.log("No courses were updated");
+    }
 
     res.status(201).json({ message: "Teacher registered successfully!" });
 

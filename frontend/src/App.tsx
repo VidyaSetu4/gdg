@@ -16,10 +16,14 @@ import LandingPage from './pages/LandingPage.tsx';
 import TeacherSignup from './pages/TeacherSignup.tsx';
 import TeacherOnlineClasses from './pages/Teacher_Meetings.tsx';
 import TeacherUpload from './pages/Teacher_Materials.tsx';
-import ConductTests from './pages/Teacher_tests.tsx';
+import CreateSAQTest from './pages/Teacher_tests.tsx';
 import TeacherProfile from './pages/Teacher_profile.tsx';
 import TeacherAnalytics from './pages/Teacher_Analytics.tsx';
 import TeacherDashboard from './pages/Teacher_Dashboard.tsx';
+import AttemptSAQ from './pages/AttemptSAQ.tsx';
+import TeacherSAQSubmissions from './pages/TeacherSAQSubmissions.tsx';
+import StudentSubmissions from './pages/StudentSubmission.tsx';
+import TeacherSAQAnalytics from './pages/TeacherSAQAnalytics.tsx';
 
 interface LayoutProps {
   children: ReactNode;
@@ -122,6 +126,8 @@ function App() {
               <Route path="/onlineClasses" element={<Layout userRole={userRole}><OnlineClasses /></Layout>} />
               <Route path="/materials" element={<Layout userRole={userRole}><Materials /></Layout>} />
               <Route path="/tests" element={<Layout userRole={userRole}><Tests /></Layout>} />
+              <Route path="/attempt-saq/:testId" element={<Layout userRole={userRole}><AttemptSAQ /></Layout>} />
+              <Route path="/student/submissions" element={<Layout userRole={userRole}><StudentSubmissions /></Layout>} />
               <Route path="/progress" element={<Layout userRole={userRole}><Progress /></Layout>} />
               <Route path="/profile" element={<Layout userRole={userRole}><Profile /></Layout>} />
               <Route path="/chatbot" element={<Layout userRole={userRole}><Chatbot /></Layout>} />
@@ -132,8 +138,10 @@ function App() {
               <Route path="/dashboard" element={<Layout userRole={userRole ?? ''}><TeacherDashboard setIsAuthenticated={setIsAuthenticated} /></Layout>} />
               <Route path="/materials" element={<Layout userRole={userRole ?? ''}><TeacherUpload /></Layout>} />
               <Route path="/onlineClasses" element={<Layout userRole={userRole ?? ''}><TeacherOnlineClasses /></Layout>} />
-              <Route path="/tests" element={<Layout userRole={userRole ?? ''}><ConductTests /></Layout>} />
-              <Route path="/profile" element={<Layout userRole={userRole ?? ''}><TeacherProfile /></Layout>} />
+              <Route path="/tests" element={<Layout userRole={userRole ?? ''}><CreateSAQTest /></Layout>} />
+              <Route path="teacher/saq/:saqId/submissions" element={<Layout userRole={userRole ?? ''}><TeacherSAQSubmissions /></Layout>} />
+              <Route path="teacher/saq/:saqId/analytics" element={<Layout userRole={userRole ?? ''}><TeacherSAQAnalytics /></Layout>} />
+              <Route path="/profile" element={<Layout userRole={userRole ?? ''}><TeacherProfile /></Layout>} />     
               <Route path="/progress" element={<Layout userRole={userRole ?? ''}><TeacherAnalytics /></Layout>} />
               <Route path="*" element={<Navigate to="/onlineClasses" />} />
             </>

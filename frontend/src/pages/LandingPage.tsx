@@ -29,6 +29,10 @@ function App() {
     setShowSignupModal(true);
   };
 
+  const handleLoginClick = () => {
+    navigate('/login'); // Adjust the route as necessary
+  };
+
   const handleSignupTypeSelect = (type: 'student' | 'teacher') => {
     setShowSignupModal(false);
     navigate(`/signup/${type}`);
@@ -42,240 +46,268 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-      {/* Hero Section */}
-      <header className="bg-white/80 backdrop-blur-sm fixed w-full z-50 shadow-lg">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <GraduationCap className="h-8 w-8 text-indigo-600" />
-              <span className="text-2xl font-bold text-gray-800">VidyaSetu</span>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+        {/* Hero Section */}
+          <header className="bg-white/90 backdrop-blur-sm fixed w-full z-50 shadow-lg border-b border-gray-200">
+          <div className="container mx-auto px-6 py-4">
+            <div className="flex items-center justify-between">
+              {/* Logo */}
+              <div className="flex items-center space-x-2">
+                <GraduationCap className="h-8 w-8 text-[#4285F4]" />
+                <span className="text-2xl font-bold text-gray-900">VidyaSetu</span>
+              </div>
+
+              {/* Navigation */}
+              <nav className="hidden md:flex space-x-6">
+                <button
+                  onClick={() => scrollToSection("about")}
+                  className="text-gray-700 hover:text-[#4285F4] transition-colors font-medium"
+                >
+                  About
+                </button>
+                <button
+                  onClick={() => scrollToSection("impact")}
+                  className="text-gray-700 hover:text-[#DB4437] transition-colors font-medium"
+                >
+                  Impact
+                </button>
+                <button
+                  onClick={() => scrollToSection("features")}
+                  className="text-gray-700 hover:text-[#F4B400] transition-colors font-medium"
+                >
+                  Features
+                </button>
+                <button
+                  onClick={() => scrollToSection("benefits")}
+                  className="text-gray-700 hover:text-[#0F9D58] transition-colors font-medium"
+                >
+                  Benefits
+                </button>
+
+                {/* Buttons */}
+                <button
+                  onClick={handleLoginClick}
+                  className="bg-[#4285F4] text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#357AE8] transition-colors"
+                >
+                  Login
+                </button>
+                <button
+                  onClick={handleSignupClick}
+                  className="bg-[#4285F4] text-white px-5 py-2 rounded-lg shadow-md hover:bg-[#357AE8] transition-colors"
+                >
+                  Join Now
+                </button>
+              </nav>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              <button onClick={() => scrollToSection('about')} className="text-gray-600 hover:text-indigo-600 transition-colors">About</button>
-              <button onClick={() => scrollToSection('impact')} className="text-gray-600 hover:text-indigo-600 transition-colors">Impact</button>
-              <button onClick={() => scrollToSection('features')} className="text-gray-600 hover:text-indigo-600 transition-colors">Features</button>
-              <button onClick={() => scrollToSection('benefits')} className="text-gray-600 hover:text-indigo-600 transition-colors">Benefits</button>
-              <button 
-                onClick={handleSignupClick} 
-                className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-indigo-700 transition-colors"
-              >
-                Join Now
-              </button>
-            </nav>
+          </div>
+        </header>
+        <main>
+        {/* Hero Section */}
+        {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 relative">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2070&q=80"
+            alt="Education Background"
+            className="w-full h-full object-cover opacity-10"
+          />
+        </div>
+        <div className="container mx-auto text-center relative z-10">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            Building Bridges to Education
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
+            VidyaSetu, meaning "Bridge of Knowledge," connects underserved communities with quality education through innovative technology. 
+            We're breaking down barriers and creating pathways to learning for everyone, everywhere.
+          </p>
+          <div className="flex justify-center gap-4">
+            <button 
+              onClick={handleSignupClick} 
+              className="bg-[#4285F4] text-white px-8 py-3 rounded-lg shadow-lg hover:bg-[#357AE8] transition-colors text-lg"
+            >
+              Start Learning
+            </button>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main>
-        {/* Hero Section */}
-        <section className="pt-32 pb-20 px-4 relative">
-          <div className="absolute inset-0 z-0">
-            <img 
-              src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2070&q=80"
-              alt="Education Background"
-              className="w-full h-full object-cover opacity-10"
-            />
-          </div>
-          <div className="container mx-auto text-center relative z-10">
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              Building Bridges to Education
-            </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
-              VidyaSetu, meaning "Bridge of Knowledge," connects underserved communities with quality education through innovative technology. 
-              We're breaking down barriers and creating pathways to learning for everyone, everywhere.
-            </p>
-            <div className="flex justify-center gap-4">
-              <button 
-                onClick={handleSignupClick} 
-                className="bg-indigo-600 text-white px-8 py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition-colors text-lg"
-              >
-                Start Learning
-              </button>
+      {/* Mission Section */}
+      <section id="about" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center gap-12">
+            <div className="md:w-1/2">
+              <img 
+                src="https://images.unsplash.com/photo-1488254491307-10ca8fa174c8?auto=format&fit=crop&w=1000&q=80"
+                alt="Students learning"
+                className="rounded-lg shadow-xl"
+              />
+            </div>
+            <div className="md:w-1/2">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+              <p className="text-lg text-gray-600 mb-6">
+                In a world where education remains inaccessible to millions, VidyaSetu stands as a beacon of hope. 
+                We leverage technology to overcome geographical, economic, and social barriers that prevent access to quality education.
+              </p>
+              <ul className="space-y-4">
+                <li className="flex items-center space-x-3">
+                  <BookOpenCheck className="h-6 w-6 text-[#4285F4]" />
+                  <span className="text-gray-700">Personalized learning paths for every student</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Globe2 className="h-6 w-6 text-[#DB4437]" />
+                  <span className="text-gray-700">Breaking geographical barriers through technology</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <BarChart3 className="h-6 w-6 text-[#F4B400]" />
+                  <span className="text-gray-700">Data-driven approach to improve learning outcomes</span>
+                </li>
+                <li className="flex items-center space-x-3">
+                  <Users className="h-6 w-6 text-[#0F9D58]" />
+                  <span className="text-gray-700">Building a global community of learners and educators</span>
+                </li>
+              </ul>
             </div>
           </div>
-        </section>
-
-        {/* Mission Section */}
-        <section id="about" className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-center gap-12">
-              <div className="md:w-1/2">
-                <img 
-                  src="https://images.unsplash.com/photo-1488254491307-10ca8fa174c8?auto=format&fit=crop&w=1000&q=80"
-                  alt="Students learning"
-                  className="rounded-lg shadow-xl"
-                />
-              </div>
-              <div className="md:w-1/2">
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
-                <p className="text-lg text-gray-600 mb-6">
-                  In a world where education remains inaccessible to millions, VidyaSetu stands as a beacon of hope. 
-                  We leverage technology to overcome geographical, economic, and social barriers that prevent access to quality education.
-                </p>
-                <ul className="space-y-4">
-                  <li className="flex items-center space-x-3">
-                    <BookOpenCheck className="h-6 w-6 text-indigo-600" />
-                    <span className="text-gray-700">Personalized learning paths for every student</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <Globe2 className="h-6 w-6 text-indigo-600" />
-                    <span className="text-gray-700">Breaking geographical barriers through technology</span>
-                  </li>
-                  <li className="flex items-center space-x-3">
-                    <BarChart3 className="h-6 w-6 text-indigo-600" />
-                    <span className="text-gray-700">Data-driven approach to improve learning outcomes</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
+      </section>
 
         {/* Impact Stats */}
-        <section id="impact" className="py-20 bg-indigo-600">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-              <div className="text-center">
-                <Users className="h-12 w-12 text-white mx-auto mb-4" />
-                <h3 className="text-4xl font-bold text-white mb-2">50,000+</h3>
-                <p className="text-indigo-100">Active Students</p>
-              </div>
-              <div className="text-center">
-                <Globe2 className="h-12 w-12 text-white mx-auto mb-4" />
-                <h3 className="text-4xl font-bold text-white mb-2">100+</h3>
-                <p className="text-indigo-100">Countries Reached</p>
-              </div>
-              <div className="text-center">
-                <Trophy className="h-12 w-12 text-white mx-auto mb-4" />
-                <h3 className="text-4xl font-bold text-white mb-2">90%</h3>
-                <p className="text-indigo-100">Completion Rate</p>
-              </div>
-              <div className="text-center">
-                <BookOpen className="h-12 w-12 text-white mx-auto mb-4" />
-                <h3 className="text-4xl font-bold text-white mb-2">1000+</h3>
-                <p className="text-indigo-100">Course Materials</p>
-              </div>
+      <section id="impact" className="py-20 bg-blue-600">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <Users className="h-12 w-12 text-white mx-auto mb-4" />
+              <h3 className="text-4xl font-bold text-white mb-2">50,000+</h3>
+              <p className="text-yellow-200">Active Students</p>
+            </div>
+            <div className="text-center">
+              <Globe2 className="h-12 w-12 text-white mx-auto mb-4" />
+              <h3 className="text-4xl font-bold text-white mb-2">100+</h3>
+              <p className="text-yellow-200">Countries Reached</p>
+            </div>
+            <div className="text-center">
+              <Trophy className="h-12 w-12 text-white mx-auto mb-4" />
+              <h3 className="text-4xl font-bold text-white mb-2">90%</h3>
+              <p className="text-yellow-200">Completion Rate</p>
+            </div>
+            <div className="text-center">
+              <BookOpen className="h-12 w-12 text-white mx-auto mb-4" />
+              <h3 className="text-4xl font-bold text-white mb-2">1000+</h3>
+              <p className="text-yellow-200">Course Materials</p>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Features Section */}
-        <section id="features" className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
-              Features of VidyaSetu
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
-                <img 
-                  src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80"
-                  alt="Interactive Learning"
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Interactive Learning</h3>
-                <p className="text-gray-600">Engage with interactive content that makes learning fun and effective.</p>
+      {/* Features Section */}
+      <section id="features" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
+            Features of VidyaSetu
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Interactive Learning",
+                desc: "Engage with interactive content that makes learning fun and effective.",
+                img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80",
+                shadow: "hover:shadow-[0_4px_20px_#4285F4]", // Blue
+              },
+              {
+                title: "Personalized Learning",
+                desc: "Tailor your learning experience to fit your individual needs and pace.",
+                img: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80",
+                shadow: "hover:shadow-[0_4px_20px_#EA4335]", // Red
+              },
+              {
+                title: "24/7 Support",
+                desc: "Get assistance anytime with our dedicated support team and resources.",
+                img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80",
+                shadow: "hover:shadow-[0_4px_20px_#FBBC05]", // Yellow
+              },
+              {
+                title: "Community Engagement",
+                desc: "Join a community of learners and educators to share knowledge and experiences.",
+                img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80",
+                shadow: "hover:shadow-[0_4px_20px_#34A853]", // Green
+              },
+              {
+                title: "Resource Sharing",
+                desc: "Access a wealth of resources, including study materials and tools.",
+                img: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80",
+                shadow: "hover:shadow-[0_4px_20px_#EA4335]", // Red
+              },
+              {
+                title: "Data Insights",
+                desc: "Utilize analytics to track progress and improve learning outcomes.",
+                img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80",
+                shadow: "hover:shadow-[0_4px_20px_#4285F4]", // Blue
+              },
+            ].map((feature, index) => (
+              <div
+                key={index}
+                className={`bg-gray-100 rounded-lg p-6 shadow-md transition-transform duration-300 hover:scale-105 ${feature.shadow}`}
+                >
+                <img src={feature.img} alt={feature.title} className="w-full h-32 object-cover rounded-lg mb-4" />
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{feature.title}</h3>
+                <p className="text-gray-600">{feature.desc}</p>
               </div>
-              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
-                <img 
-                  src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80"
-                  alt="Personalized Learning"
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Personalized Learning</h3>
-                <p className="text-gray-600">Tailor your learning experience to fit your individual needs and pace.</p>
-              </div>
-              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
-                <img 
-                  src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80"
-                  alt="24/7 Support"
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">24/7 Support</h3>
-                <p className="text-gray-600">Get assistance anytime with our dedicated support team and resources.</p>
-              </div>
-              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
-                <img 
-                  src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80"
-                  alt="Community Engagement"
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Community Engagement</h3>
-                <p className="text-gray-600">Join a community of learners and educators to share knowledge and experiences.</p>
-              </div>
-              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
-                <img 
-                  src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80"
-                  alt="Resource Sharing"
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Resource Sharing</h3>
-                <p className="text-gray-600">Access a wealth of resources, including study materials and tools.</p>
-              </div>
-              <div className="bg-gray-100 rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow duration-300 hover:scale-105">
-                <img 
-                  src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80"
-                  alt="Data Insights"
-                  className="w-full h-32 object-cover rounded-lg mb-4"
-                />
-                <h3 className="text-xl font-bold text-gray-800 mb-2">Data Insights</h3>
-                <p className="text-gray-600">Utilize analytics to track progress and improve learning outcomes.</p>
-              </div>
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Benefits Section */}
-        <section id="benefits" className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
-              Who Benefits from VidyaSetu?
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
-                <School className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Students</h3>
+
+      {/* Benefits Section */}
+      <section id="benefits" className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-16">
+            Who Benefits from VidyaSetu?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                title: "Students",
+                icon: <School className="h-12 w-12 text-red-600 mx-auto mb-6" />,
+                benefits: ["Flexible learning schedule", "Personalized attention", "Quality study materials", "Peer learning opportunities"],
+                shadow: "hover:shadow-[0_4px_20px_#EA4335]", // Red
+              },
+              {
+                title: "Teachers",
+                icon: <GraduationCap className="h-12 w-12 text-blue-600 mx-auto mb-6" />,
+                benefits: ["Digital teaching tools", "Student progress tracking", "Resource sharing", "Professional development"],
+                shadow: "hover:shadow-[0_4px_20px_#4285F4]", // Blue
+              },
+              {
+                title: "Institutions",
+                icon: <Building2 className="h-12 w-12 text-yellow-600 mx-auto mb-6" />,
+                benefits: ["Infrastructure savings", "Wider reach", "Data-driven insights", "Quality standardization"],
+                shadow: "hover:shadow-[0_4px_20px_#FBBC05]", // Yellow
+              },
+              {
+                title: "Communities",
+                icon: <Users2 className="h-12 w-12 text-green-600 mx-auto mb-6" />,
+                benefits: ["Improved literacy rates", "Skill development", "Economic growth", "Social empowerment"],
+                shadow: "hover:shadow-[0_4px_20px_#34A853]", // Green
+              },
+            ].map((group, index) => (
+              <div
+                key={index}
+                className={`bg-white rounded-xl p-8 shadow-lg text-center transition-transform duration-300 hover:scale-105 ${group.shadow}`}
+                >
+                {group.icon}
+                <h3 className="text-xl font-bold text-gray-800 mb-4">{group.title}</h3>
                 <ul className="text-gray-600 space-y-2">
-                  <li>Flexible learning schedule</li>
-                  <li>Personalized attention</li>
-                  <li>Quality study materials</li>
-                  <li>Peer learning opportunities</li>
+                  {group.benefits.map((benefit, i) => (
+                    <li key={i}>{benefit}</li>
+                  ))}
                 </ul>
               </div>
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
-                <GraduationIcon className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Teachers</h3>
-                <ul className="text-gray-600 space-y-2">
-                  <li>Digital teaching tools</li>
-                  <li>Student progress tracking</li>
-                  <li>Resource sharing</li>
-                  <li>Professional development</li>
-                </ul>
-              </div>
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
-                <Building2 className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Institutions</h3>
-                <ul className="text-gray-600 space-y-2">
-                  <li>Infrastructure savings</li>
-                  <li>Wider reach</li>
-                  <li>Data-driven insights</li>
-                  <li>Quality standardization</li>
-                </ul>
-              </div>
-              <div className="bg-white rounded-xl p-8 shadow-lg text-center hover:scale-105 transition-transform duration-300">
-                <Users2 className="h-12 w-12 text-indigo-600 mx-auto mb-6" />
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Communities</h3>
-                <ul className="text-gray-600 space-y-2">
-                  <li>Improved literacy rates</li>
-                  <li>Skill development</li>
-                  <li>Economic growth</li>
-                  <li>Social empowerment</li>
-                </ul>
-              </div>
-            </div>
+            ))}
           </div>
-        </section>
-
+        </div>
+      </section>
+      
         {/* CTA Section */}
         <section className="py-20 bg-indigo-600 relative overflow-hidden">
           <div className="absolute inset-0 z-0">
@@ -379,7 +411,7 @@ function App() {
             Join us in our mission to make quality education accessible to all, regardless of geographical or economic barriers.
           </p>
           <div className="mt-8 text-center text-gray-500">
-            © 2024 VidyaSetu. Empowering minds, transforming futures.
+            © 2025 VidyaSetu. Empowering minds, transforming futures.
           </div>
         </div>
       </footer>

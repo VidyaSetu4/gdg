@@ -10,6 +10,7 @@ import meetRoutes from "./routes/meetRoutes.js";
 import chatRoutes from "./routes/chat.js";
 import bodyParser from "body-parser";
 import course from "./routes/course.js";
+import saq from "./routes/saq.js";
 
 
 // ES Module fix for __dirname
@@ -40,6 +41,8 @@ app.use("/api/teacher", teacherRoutes);
 app.use("/api/meet", meetRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/course", course);
+app.use("/api/saq", saq);
+
 // MongoDB Connection
 if(!process.env.MONGO_URI) {
     console.error("❌ MongoDB URI missing! Add MONGO_URI to your .env file");
