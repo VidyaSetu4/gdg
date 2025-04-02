@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from "react";
 
+interface FeedbackForm {
+  formLink: string;
+  postDate: string;
+  expiryDate: string;
+}
+
 const Teacher_Feedback = () => {
   const [feedbackForm, setFeedbackForm] = useState(""); // ✅ Stores user input
-  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [loading, setLoading] = useState(false); // ✅ Tracks API calls
+  const [feedbackForms, setFeedbackForms] = useState<FeedbackForm[]>([]); // ✅ Stores submitted forms
 
-  // ✅ Fetch latest feedback status
-  const fetchFeedbackStatus = async () => {
+  // ✅ Fetch submitted feedback forms
+  const fetchFeedbackForms = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/feedback/latest");
+      const response = await fetch("http://localhost:5000/api/feedback");
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const data = await response.json();
-
-      if (data?.formLink) {
-        setFeedbackForm(data.formLink); // ✅ Autofill latest form link
-        setHasSubmitted(true); // ✅ Set only if a form already exists
-      }
+      setFeedbackForms(data); // ✅ Store fetched forms
     } catch (error) {
       console.error("Error fetching feedback:", error);
     }
   };
 
   useEffect(() => {
-    fetchFeedbackStatus();
+    fetchFeedbackForms();
   }, []);
 
   // ✅ Handle submitting a new feedback form
@@ -46,7 +48,8 @@ const Teacher_Feedback = () => {
       }
 
       alert("Feedback form submitted!");
-      setHasSubmitted(true); // ✅ Disable input & button AFTER submission
+      setFeedbackForm(""); // ✅ Clear input for new submission
+      fetchFeedbackForms(); // ✅ Refresh submitted forms
     } catch (error) {
       console.error("Submission error:", error);
       alert("Error submitting feedback. Please try again.");
@@ -72,26 +75,56 @@ const Teacher_Feedback = () => {
           Create New Form
         </button>
 
-        {/* ✅ Input is now autofilled and still editable before submission */}
+        {/* ✅ Input remains editable for multiple submissions */}
         <input
           type="text"
           placeholder="Paste Google Form link here"
           className="border border-gray-300 p-2 w-full mt-4 rounded-lg"
           value={feedbackForm}
           onChange={(e) => setFeedbackForm(e.target.value)}
-          disabled={hasSubmitted} // ✅ Still editable before submission
+          disabled={loading} // ✅ Only disable while submitting
         />
 
-        {/* ✅ Button disabled only after successful submission */}
+        {/* ✅ Button always enabled except when loading */}
         <button
           className={`w-full text-white px-4 py-2 rounded-lg mt-4 shadow-md transition duration-200 ${
-            hasSubmitted ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
-          } ${loading ? "opacity-50" : ""}`}
+            loading ? "opacity-50 cursor-not-allowed bg-gray-400" : "bg-green-600 hover:bg-green-700"
+          }`}
           onClick={handleSubmitFeedback}
-          disabled={hasSubmitted || loading} // ✅ Only disabled when needed
+          disabled={loading} // ✅ Allow multiple submissions
         >
-          {loading ? "Submitting..." : hasSubmitted ? "Feedback Submitted" : "Submit Feedback Form"}
+          {loading ? "Submitting..." : "Submit Feedback Form"}
         </button>
+      </div>
+
+      {/* ✅ Show previously submitted forms */}
+      <div className="mt-6 p-6 bg-white rounded-lg shadow-md">
+        <h3 className="text-lg font-semibold text-gray-700">📌 Submitted Feedback Forms</h3>
+
+        {feedbackForms.length > 0 ? (
+          <ul className="mt-4 space-y-4">
+            {feedbackForms.map((feedback, index) => (
+              <li key={index} className="p-4 border rounded-lg shadow-sm bg-gray-50">
+                <p className="text-sm text-gray-600">
+                  <strong>Posted on:</strong> {new Date(feedback.postDate).toLocaleDateString()}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Expires on:</strong> {new Date(feedback.expiryDate).toLocaleDateString()}
+                </p>
+                <a
+                  href={feedback.formLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline"
+                >
+                  Open Feedback Form
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-600 text-sm mt-2">No feedback forms submitted yet.</p>
+        )}
       </div>
     </div>
   );
