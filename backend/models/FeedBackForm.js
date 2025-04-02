@@ -1,10 +1,12 @@
+// models/FeedBackForm.js
 import mongoose from "mongoose";
 
-const FeedbackSchema = new mongoose.Schema({
+const FeedbackFormSchema = new mongoose.Schema({
   formLink: { type: String, required: true },
-  postDate: { type: Date, default: Date.now },
+  course: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true }, // Links to Course
+  teacher: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher", required: true }, // Links to Teacher
   expiryDate: { type: Date, required: true },
+  postDate: { type: Date, default: Date.now },
 });
 
-// Exporting the FeedbackForm model using ES Modules
-export default mongoose.model("FeedbackForm", FeedbackSchema);
+export default mongoose.model("FeedbackForm", FeedbackFormSchema);
