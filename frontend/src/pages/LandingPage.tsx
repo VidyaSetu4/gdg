@@ -210,32 +210,32 @@ function App() {
               {
                 title: "Interactive Learning",
                 desc: "Engage with interactive content that makes learning fun and effective.",
-                img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80",
+                img: "https://images.unsplash.com/photo-1742456605883-ebace0f3df99?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGludGVyYWN0aXZlJTIwbGVhcm5pbmd8ZW58MHx8MHx8fDA%3D",
               },
               {
                 title: "Personalized Learning",
                 desc: "Tailor your learning experience to fit your individual needs and pace.",
-                img: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80",
+                img: "https://plus.unsplash.com/premium_photo-1726862514335-e0cfcc8692bb?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHBlcnNvbmFsaXplZCUyMGxlYXJuaW5nfGVufDB8fDB8fHww",
               },
               {
                 title: "24/7 Support",
                 desc: "Get assistance anytime with our dedicated support team and resources.",
-                img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80",
+                img: "https://media.istockphoto.com/id/1484275347/photo/nonstop-service-concept-businessman-hand-holding-virtual-24-7-with-clock-on-hand-for.webp?a=1&b=1&s=612x612&w=0&k=20&c=b2X_2cKeqcH2JdajY2-oiQOLpbS05no1r7tLzt4gMhw=",
               },
               {
                 title: "Community Engagement",
                 desc: "Join a community of learners and educators to share knowledge and experiences.",
-                img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80",
+                img: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dGVhbXxlbnwwfHwwfHx8MA%3D%3D",
               },
               {
                 title: "Resource Sharing",
                 desc: "Access a wealth of resources, including study materials and tools.",
-                img: "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1000&q=80",
+                img: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHRlYW18ZW58MHx8MHx8fDA%3D",
               },
               {
                 title: "Data Insights",
                 desc: "Utilize analytics to track progress and improve learning outcomes.",
-                img: "https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=1000&q=80",
+                img: "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8ZGF0YSUyMGluc2lnaHRzfGVufDB8fDB8fHww",
               },
             ].map((feature, index) => (
               <div
