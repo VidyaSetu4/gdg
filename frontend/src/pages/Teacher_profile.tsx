@@ -11,6 +11,7 @@ import {
   Award, 
   FileText
 } from 'lucide-react';
+import API_BASE_URL from "../../config";
 
 const TeacherProfile = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -33,7 +34,7 @@ const TeacherProfile = () => {
     const fetchTeacherData = async () => {
       try {
         console.log("🚀 Sending request to /api/teacher/profile...");
-        const response = await axios.get('http://localhost:5000/api/teacher/profile', {
+        const response = await axios.get(`${API_BASE_URL}/api/teacher/profile`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`
           }

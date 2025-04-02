@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Award
 } from "lucide-react";
+import API_BASE_URL from "../../config";
 
 interface Submission {
   studentId: string;
@@ -85,7 +86,7 @@ const TeacherSAQSubmissions = () => {
         title: string;
         submissionCount: number;
         submissions: Submission[];
-      }>(`http://localhost:5000/api/saq/teacher/saq/${saqId}/submissions`, {
+      }>(`${API_BASE_URL}/api/saq/teacher/saq/${saqId}/submissions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

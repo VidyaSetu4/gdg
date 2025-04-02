@@ -1,19 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), // Add this alias
+      '@': '/src', // Ensure the alias works correctly
     },
   },
-  optimizeDeps: {
-    exclude: ['lucide-react'],
+  define: {
+    'import.meta.env': {}, // Ensures Vite env variables are recognized
   },
-  base: '/',  // Ensures correct base path for SPA routing
-  build: {
-    outDir: 'dist',
-  }
 });

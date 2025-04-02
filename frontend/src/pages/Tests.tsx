@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config";
 
 // Define the structure of a single SAQ test
 interface SAQTest {
@@ -40,7 +41,7 @@ const AvailableSAQTests = () => {
         }
 
         const response = await axios.get<{ tests: SAQTest[] }>(
-          "http://localhost:5000/api/saq/student/available-tests",
+          `${API_BASE_URL}/api/saq/student/available-tests`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }

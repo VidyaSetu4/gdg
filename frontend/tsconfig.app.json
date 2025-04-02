@@ -3,15 +3,17 @@
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
+    "module": "esnext",
     "skipLibCheck": true,
+    "composite": true, // Required for project references
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "moduleResolution": "bundler", // Required for allowImportingTsExtensions
+    "allowImportingTsExtensions": true, // Allow importing .ts extensions
+    "emitDeclarationOnly": true, // Required for allowImportingTsExtensions
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    // "noEmit": true // Remove or comment this line
     "jsx": "react-jsx",
 
     /* Linting */
@@ -20,5 +22,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts", "src/**/*.tsx","config.ts"],
+  "exclude": ["node_modules", "dist"]
 }

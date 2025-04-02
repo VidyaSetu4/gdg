@@ -3,6 +3,7 @@ import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import { Send, Bot, Paperclip, Mic, Image, Square } from "lucide-react";
 import {jwtDecode} from "jwt-decode"; // Import jwt-decode
+import API_BASE_URL from "../../config";
 
 const API_KEY = "AIzaSyAuoc6omPHCESF6nREp7L2sHnT1MK5s30k"; // Replace with your actual API key
 
@@ -93,7 +94,7 @@ const Chatbot = () => {
     if (studentId) {
       const fetchChatHistory = async () => {
         try {
-          const response = await axios.get(`http://localhost:5000/api/chat/${studentId}`);
+          const response = await axios.get(`${API_BASE_URL}/api/chat/${studentId}`);
           // Log the response for debugging
           console.log("API Response:", response.data);
 
@@ -178,7 +179,7 @@ const Chatbot = () => {
       if (audioBlob) {
         audioData = await blobToBase64(audioBlob);
       }
-      await axios.post("http://localhost:5000/api/chat", {
+      await axios.post(`${API_BASE_URL}/api/chat`, {
         studentId, // Include studentId in payload
         text: message.text,
         sender: message.sender,

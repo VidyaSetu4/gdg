@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import API_BASE_URL from "../../config";
 
 interface TestData {
   name: string;
@@ -43,7 +44,7 @@ const TeacherAnalytics = () => {
           tests: TestData[];
           topStudents: TopStudent[];
           improvementAreas: ImprovementArea[];
-        }>("http://localhost:5000/api/saq/teacher/analytics", {
+        }>(`${API_BASE_URL}/api/saq/teacher/analytics`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import API_BASE_URL from "../../config";
 
 // Define the expected structure for a course
 interface Course {
@@ -24,7 +25,7 @@ const TeacherUpload = () => {
         }
 
         const response = await axios.get<{ courses: Course[] }>(
-          "http://localhost:5000/api/course/courses",
+          `${API_BASE_URL}/api/course/courses`,
           { headers: { Authorization: token } }
         );
 
@@ -55,7 +56,7 @@ const TeacherUpload = () => {
         return;
       }
 
-      await axios.post("http://localhost:5000/api/course/upload", formData, {
+      await axios.post(`${API_BASE_URL}/api/course/upload`, formData, {
         headers: { Authorization: token, "Content-Type": "multipart/form-data" },
       });
 

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from "../../config";
 
 interface CertificateData {
   name: string;
@@ -120,7 +121,7 @@ const TeacherSignup: React.FC = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:5000/api/teacher/signup", {
+      const response = await fetch(`${API_BASE_URL}/api/teacher/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

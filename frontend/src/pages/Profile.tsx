@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { User, Mail, Phone, MapPin, Calendar, BookOpen, Award, Settings, Edit, Camera, LogOut } from 'lucide-react';
 import axios from 'axios';
+import API_BASE_URL from '../../config';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -26,7 +27,7 @@ const Profile = () => {
       try {
         // Fetch student profile
         console.log("🚀 Sending request to /api/auth/profile...");
-        const response = await axios.get('http://localhost:5000/api/auth/profile',{
+        const response = await axios.get(`${API_BASE_URL}/api/auth/profile`,{
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`
           }

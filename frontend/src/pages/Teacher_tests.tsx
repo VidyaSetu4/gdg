@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { PlusCircle, MinusCircle, Eye, BookOpen, Save, Loader2 } from "lucide-react";
+import API_BASE_URL from "../../config";
 
 interface Course {
   _id: string;
@@ -42,13 +43,13 @@ const CreateSAQTest = () => {
 
         // Fetch courses
         const courseResponse = await axios.get<{ courses: Course[] }>(
-          "http://localhost:5000/api/course/courses",
+          `${API_BASE_URL}/api/course/courses`,
           { headers: { Authorization: `${token}` } }
         );
         setCourses(courseResponse.data.courses);
 
         // Fetch teacher's SAQ tests
-        const testResponse = await axios.get<SAQTest[]>("http://localhost:5000/api/saq/teacher/tests", {
+        const testResponse = await axios.get<SAQTest[]>(`${API_BASE_URL}/api/saq/teacher/tests`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTests(testResponse.data);
@@ -93,7 +94,7 @@ const CreateSAQTest = () => {
     setSubmitting(true);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/saq/create",
+        `${API_BASE_URL}/api/saq/create`,
         { title, courseId: selectedCourse, questions, attemptsAllowed: attempts },
         { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
       );

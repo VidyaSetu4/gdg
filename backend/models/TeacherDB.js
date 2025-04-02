@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 // Define the Mongoose Schema
 const teacherSchema = new Schema({
     name: { type: String, required: true, trim: true },

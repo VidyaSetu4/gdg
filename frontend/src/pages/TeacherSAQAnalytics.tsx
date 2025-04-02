@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import API_BASE_URL from "../../config";
 
 // Register Chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -34,7 +35,7 @@ const TeacherSAQAnalytics = () => {
         }
 
         const response = await axios.get<AnalyticsData>(
-          `http://localhost:5000/api/saq/teacher/saq/${saqId}/analytics`,
+          `${API_BASE_URL}/api/saq/teacher/saq/${saqId}/analytics`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

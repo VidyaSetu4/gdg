@@ -16,6 +16,7 @@ import {
   Loader2,
   AlertCircle
 } from 'lucide-react';
+import API_BASE_URL from "../../config";
 
 interface DashboardProps {
   setIsAuthenticated: (isAuthenticated: boolean) => void;
@@ -69,7 +70,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsAuthenticated }) => {
         }
 
         const response = await axios.get<{ submissions: Submission[] }>(
-          "http://localhost:5000/api/saq/student/submissions",
+          `${API_BASE_URL}/api/saq/student/submissions`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 

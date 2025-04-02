@@ -9,7 +9,7 @@ import { Separator } from "../components/ui/separator";
 import { Badge } from "../components/ui/badge";
 import { AlertCircle, CheckCircle, Clock } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-
+import API_BASE_URL from "../../config"; // Adjust the import path as necessary
 // Define the SAQ test structure
 interface SAQTest {
     _id: string;
@@ -73,7 +73,7 @@ const AttemptSAQ = () => {
                 }
 
                 const response = await axios.get<{ tests: SAQTest[] }>(
-                    "http://localhost:5000/api/saq/student/available-tests",
+                    `${API_BASE_URL}/api/saq/student/available-tests`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     }
@@ -172,7 +172,7 @@ const AttemptSAQ = () => {
 
             // Submit answers
             const submitResponse = await axios.post(
-                "http://localhost:5000/api/saq/submit",
+                `${API_BASE_URL}/api/saq/submit`,
                 {
                     saqId: testId,
                     answers,
@@ -189,7 +189,7 @@ const AttemptSAQ = () => {
 
             // Trigger AI evaluation
             const evaluateResponse = await axios.post(
-                "http://localhost:5000/api/saq/evaluate",
+                `${API_BASE_URL}/api/saq/evaluate`,
                 { submissionId },
                 {
                     headers: {

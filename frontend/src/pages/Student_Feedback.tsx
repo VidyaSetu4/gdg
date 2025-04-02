@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_BASE_URL from "../../config";
 
 interface FeedbackForm {
   formLink: string;
@@ -11,7 +12,7 @@ const Student_Feedback = () => {
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(localStorage.getItem("hasSubmitted") === "true");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/feedback/latest")
+    fetch(`${API_BASE_URL}/api/feedback/latest`)
       .then((res) => res.json())
       .then((data) => {
         if (data?.formLink) {

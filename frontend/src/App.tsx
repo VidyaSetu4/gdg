@@ -26,6 +26,7 @@ import StudentSubmissions from './pages/StudentSubmission.tsx';
 import TeacherSAQAnalytics from './pages/TeacherSAQAnalytics.tsx';
 import FeedbackFormStudent from './pages/Student_Feedback.tsx'; // Feedback form for student
 import FeedbackFormTeacher from './pages/Teacher_Feedback.tsx'; // Feedback form creation for teacher
+import API_BASE_URL from '../config';
 
 interface LayoutProps {
   children: ReactNode;
@@ -88,7 +89,7 @@ function App() {
 
   const verifyToken = async (token: string) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/verify-token', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/verify-token`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

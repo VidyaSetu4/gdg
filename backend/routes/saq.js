@@ -1,9 +1,9 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import SAQ from "../models/SAQSchema";
-import Teacher from "../models/TeacherDB";
-import Student from "../models/StudentDB";
-import Course from "../models/CourseSchema";
+import SAQ from "../models/SAQSchema.js";
+import Teacher from "../models/TeacherDB.js";
+import Student from "../models/StudentDB.js";
+import Course from "../models/CourseSchema.js";
 import SAQSubmission from "../models/SAQSubmission.js";
 import { evaluateSAQ } from "../utils/aiEvaluator.js"; // Updated AI function
 

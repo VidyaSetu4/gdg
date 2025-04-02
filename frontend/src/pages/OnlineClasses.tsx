@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Video, Calendar, Clock, ExternalLink } from "lucide-react";
+import API_BASE_URL from "../../config";
 
 interface ClassItem {
   _id: string;
@@ -20,7 +21,7 @@ const OnlineClasses: React.FC = () => {
     const fetchMeetings = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5000/api/meet/meetings");
+        const response = await fetch(`${API_BASE_URL}/api/meet/meetings`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch meetings");

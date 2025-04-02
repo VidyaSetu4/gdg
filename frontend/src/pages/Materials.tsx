@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Download, Eye, Loader2, AlertTriangle } from "lucide-react";
+import API_BASE_URL from "../../config";
 
 interface Note {
   courseName: string;
@@ -33,7 +34,7 @@ const Materials = () => {
     const fetchNotes = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/course/notes", {
+        const response = await axios.get(`${API_BASE_URL}/api/course/notes`, {
           headers: { Authorization: `${token}` },
         });
 

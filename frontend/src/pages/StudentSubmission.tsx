@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Loader2, ChevronDown, ChevronUp, Award, Bookmark, Calendar, BarChart2, MessageSquare, BookOpen, AlertCircle } from "lucide-react";
+import API_BASE_URL from "../../config";
 
 interface Submission {
   saqId: string;
@@ -44,7 +45,7 @@ const StudentSubmissions = () => {
         }
 
         const response = await axios.get<{ submissions: Submission[] }>(
-          "http://localhost:5000/api/saq/student/submissions",
+          `${API_BASE_URL}/api/saq/student/submissions`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
@@ -241,7 +242,7 @@ const StudentSubmissions = () => {
                   >
                     <div className="flex items-start mb-3 sm:mb-0">
                       <div className="flex-shrink-0 mr-3">
-                        <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${getScoreGradient(sub.percentageEarned)} flex items-center justify-center text-white font-bold text-sm`}>
+                        <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${getScoreGradient(sub.percentageEarned || 0)} flex items-center justify-center text-white font-bold text-sm`}>
                           {sub.percentageEarned?.toFixed(1)}%
                         </div>
                       </div>

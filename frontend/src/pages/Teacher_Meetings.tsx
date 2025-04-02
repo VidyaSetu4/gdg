@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Video, Calendar, Clock, Download } from 'lucide-react';
 import axios from 'axios';
+import API_BASE_URL from "../../config";
 
 interface ClassItem {
   id: number;
@@ -56,7 +57,7 @@ const TeacherOnlineClasses = () => {
     const endTime = new Date(new Date(startTime).getTime() + parseInt(duration) * 60000).toISOString();
 
     try {
-      const response = await axios.post<{ meetLink: string }>('http://localhost:5000/api/meet/create-meet', {
+      const response = await axios.post<{ meetLink: string }>(`${API_BASE_URL}/api/meet/create-meet`, {
         token,
         summary: title,
         startTime,

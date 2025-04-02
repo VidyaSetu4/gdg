@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import API_BASE_URL from "../../config";
 
 interface FeedbackForm {
   formLink: string;
@@ -14,7 +15,7 @@ const Teacher_Feedback = () => {
   // ✅ Fetch submitted feedback forms
   const fetchFeedbackForms = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/feedback");
+      const response = await fetch(`${API_BASE_URL}/api/feedback`);
       if (!response.ok) throw new Error(`Error: ${response.statusText}`);
       const data = await response.json();
       setFeedbackForms(data); // ✅ Store fetched forms
@@ -37,7 +38,7 @@ const Teacher_Feedback = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/feedback", {
+      const response = await fetch(`${API_BASE_URL}/api/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ formLink: feedbackForm }),
