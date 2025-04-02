@@ -7,7 +7,8 @@ import {
   ClipboardList,
   BarChart2,
   User,
-  Home
+  Home,
+  MessageSquare // Added the MessageSquare icon for feedback
 } from 'lucide-react';
 
 interface TeacherSidebarProps {
@@ -26,6 +27,7 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ activePage, setActivePa
     { id: 'tests', label: 'Tests', icon: <ClipboardList size={20} />, path: '/tests' },
     { id: 'progress', label: 'Analytics', icon: <BarChart2 size={20} />, path: '/progress' },
     { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' },
+    { id: 'feedback', label: 'Feedback', icon: <MessageSquare size={20} />, path: '/feedback' }, // New Feedback item
   ];
 
   return (

@@ -24,13 +24,15 @@ import AttemptSAQ from './pages/AttemptSAQ.tsx';
 import TeacherSAQSubmissions from './pages/TeacherSAQSubmissions.tsx';
 import StudentSubmissions from './pages/StudentSubmission.tsx';
 import TeacherSAQAnalytics from './pages/TeacherSAQAnalytics.tsx';
+import FeedbackFormStudent from './pages/Student_Feedback.tsx'; // Feedback form for student
+import FeedbackFormTeacher from './pages/Teacher_Feedback.tsx'; // Feedback form creation for teacher
 
 interface LayoutProps {
   children: ReactNode;
   userRole: string;
 }
 
-function Layout({ children, userRole }:LayoutProps) {
+function Layout({ children, userRole }: LayoutProps) {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activePage, setActivePage] = useState('/dashboard');
@@ -99,7 +101,7 @@ function App() {
       setIsAuthenticated(true);
       setUserRole(result.role);
     } catch (error) {
-      console.error("Error verifying token:", error);
+      console.error('Error verifying token:', error);
       setIsAuthenticated(false);
       setUserRole(null);
     }
@@ -131,6 +133,8 @@ function App() {
               <Route path="/progress" element={<Layout userRole={userRole}><Progress /></Layout>} />
               <Route path="/profile" element={<Layout userRole={userRole}><Profile /></Layout>} />
               <Route path="/chatbot" element={<Layout userRole={userRole}><Chatbot /></Layout>} />
+              {/* Feedback Form Route for Students */}
+              <Route path="/feedback" element={<Layout userRole={userRole}><FeedbackFormStudent /></Layout>} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </>
           ) : (
@@ -143,7 +147,9 @@ function App() {
               <Route path="teacher/saq/:saqId/analytics" element={<Layout userRole={userRole ?? ''}><TeacherSAQAnalytics /></Layout>} />
               <Route path="/profile" element={<Layout userRole={userRole ?? ''}><TeacherProfile /></Layout>} />     
               <Route path="/progress" element={<Layout userRole={userRole ?? ''}><TeacherAnalytics /></Layout>} />
-              <Route path="*" element={<Navigate to="/onlineClasses" />} />
+              {/* Feedback Form Route for Teachers (Create Form) */}
+              <Route path="/feedback" element={<Layout userRole={userRole ?? ''}><FeedbackFormTeacher /></Layout>} />
+              <Route path="*" element={<Navigate to="/dashboard" />} />
             </>
           )
         ) : (
