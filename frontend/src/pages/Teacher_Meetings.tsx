@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { Video, Calendar, Clock, Download } from 'lucide-react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Video, Calendar, Clock, User } from "lucide-react";
+import axios from "axios";
 import API_BASE_URL from "../../config";
 
 interface ClassItem {
   id: number;
   title: string;
-  date: string;
-  time: string;
+  startTime: string;
+  endTime: string;
+  hostName: string;
   meetLink: string;
-  recording?: string;
 }
 
 interface FormData {
@@ -20,58 +20,90 @@ interface FormData {
 }
 
 const TeacherOnlineClasses = () => {
-  const [classes, setClasses] = useState<ClassItem[]>([
-    {
-      id: 1,
-      title: 'Mathematics - Algebra Basics',
-      date: '2024-03-20',
-      time: '10:00 AM',
-      meetLink: 'https://meet.google.com/abc-defg-hij',
-      recording: 'https://example.com/recording1.mp4',
-    },
-  ]);
-
+  const [classes, setClasses] = useState<ClassItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    date: '',
-    time: '',
-    duration: '',
+    title: "",
+    date: "",
+    time: "",
+    duration: "",
   });
-  const [meetLink, setMeetLink] = useState('');
-  const [error, setError] = useState('');
-  const [token, setToken] = useState('');
+  const [meetLink, setMeetLink] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("Authorization token is missing. Please log in again.");
+          return;
+        }
+
+        const response = await axios.get<ClassItem[]>(
+          `${API_BASE_URL}/api/meet/meetings`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setClasses(response.data);
+      } catch (error) {
+        setError("Failed to fetch meetings. Please try again.");
+        console.error(error);
+      }
+    };
+
+    fetchMeetings();
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(''); // Reset error before making the request
-    setToken(localStorage.getItem('token') || '');
+    setError("");
 
-    const {title, date, time, duration } = formData;
-    const startTime = new Date(`${date}T${time}`).toISOString();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Authorization token is missing. Please log in again.");
+      return;
+    }
+
+    const { title, date, time, duration } = formData;
+    const startTime = new Date(`${date}T${time}:00`).toISOString();
     const endTime = new Date(new Date(startTime).getTime() + parseInt(duration) * 60000).toISOString();
 
     try {
-      const response = await axios.post<{ meetLink: string }>(`${API_BASE_URL}/api/meet/create-meet`, {
-        token,
-        summary: title,
-        startTime,
-        endTime,
-      });
+      const response = await axios.post<{ meetLink: string; hostName: string }>(
+        `${API_BASE_URL}/api/meet/create-meet`,
+        { token, summary: title, startTime, endTime },
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+      );
 
       setMeetLink(response.data.meetLink);
-      setClasses([...classes, { id: classes.length + 1, ...formData, meetLink: response.data.meetLink }]);
+      setClasses([
+        ...classes,
+        { id: classes.length + 1, title, startTime, endTime, hostName: response.data.hostName, meetLink: response.data.meetLink },
+      ]);
       setShowForm(false);
-      setFormData({ title: '', date: '', time: '', duration: '' }); // Clear form after submission
+      setFormData({ title: "", date: "", time: "", duration: "" });
     } catch (error) {
-      setError('Failed to create Google Meet link. Please try again.');
-      console.error('Error creating Google Meet link:', error);
+      setError("Failed to create Google Meet link. Please try again.");
+      console.error(error);
     }
+  };
+
+  const formatDateTime = (isoString: string) => {
+    return new Date(isoString).toLocaleString("en-US", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
   };
 
   return (
@@ -142,39 +174,35 @@ const TeacherOnlineClasses = () => {
 
       {meetLink && (
         <div className="bg-green-100 p-4 rounded-lg text-green-800 mb-6">
-          Google Meet Link: <a href={meetLink} target="_blank" rel="noopener noreferrer">{meetLink}</a>
+          Google Meet Link:{" "}
+          <a href={meetLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+            {meetLink}
+          </a>
         </div>
       )}
 
       <div className="grid gap-6">
         {classes.map((classItem) => (
           <div key={classItem.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-xl font-semibold mb-2">{classItem.title}</h3>
-                <div className="flex items-center space-x-4 text-gray-600">
-                  <div className="flex items-center">
-                    <Calendar size={16} className="mr-2" />
-                    {classItem.date}
-                  </div>
-                  <div className="flex items-center">
-                    <Clock size={16} className="mr-2" />
-                    {classItem.time}
-                  </div>
-                </div>
+            <h3 className="text-xl font-semibold mb-2">{classItem.title}</h3>
+            <div className="text-gray-600 space-y-2">
+              <div className="flex items-center">
+                <User size={16} className="mr-2" />
+                <span className="font-medium">Host:</span> {classItem.hostName}
               </div>
-              <div className="flex space-x-3">
-                <a
-                  href={classItem.meetLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  <Video size={16} className="mr-2" />
-                  Join Class
-                </a>
+              <div className="flex items-center">
+                <Calendar size={16} className="mr-2" />
+                <span className="font-medium">Start:</span> {formatDateTime(classItem.startTime)}
+              </div>
+              <div className="flex items-center">
+                <Clock size={16} className="mr-2" />
+                <span className="font-medium">End:</span> {formatDateTime(classItem.endTime)}
               </div>
             </div>
+            <a href={classItem.meetLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+              <Video size={16} className="mr-2" />
+              Join Class
+            </a>
           </div>
         ))}
       </div>

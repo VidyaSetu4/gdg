@@ -17,6 +17,6 @@
       "@/*": ["*"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "../backend/routes/temp.js"],
   "exclude": ["node_modules", "dist"]
 }

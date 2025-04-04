@@ -23,6 +23,9 @@ dotenv.config({ path: path.resolve(__dirname, ".env") });
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+app.get("/", (req, res) => {
+    res.send("Welcome to the backend server!");
+});
 // Middleware
 app.use(cors({
     origin: "*",  // Allow all origins (can be restricted to specific domains)
