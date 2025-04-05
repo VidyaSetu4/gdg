@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from "../../config";
 
 interface Course {
   _id: string;
@@ -42,7 +43,7 @@ const TeacherFeedback = () => {
 
       // Fetch courses taught by the teacher
       const courseResponse = await axios.get<{ courses: Course[] }>(
-        "http://localhost:8080/api/course/courses",
+        `${API_BASE_URL}/api/course/courses`,
         { headers: { Authorization: `${token}` } }
       );
       setCourses(courseResponse.data.courses);
@@ -53,7 +54,7 @@ const TeacherFeedback = () => {
 
       // Fetch feedback forms created by the teacher
       const feedbackResponse = await axios.get<FeedbackForm[]>(
-        "http://localhost:8080/api/feedback/teacher",
+        `${API_BASE_URL}/api/feedback/teacher`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setFeedbackForms(feedbackResponse.data);
@@ -85,7 +86,7 @@ const TeacherFeedback = () => {
 
       setSubmitting(true);
       const response = await axios.post<FeedbackForm>(
-        "http://localhost:8080/api/feedback",
+        `${API_BASE_URL}/api/feedback`,
         { formLink, courseId: selectedCourse },
         { headers: { Authorization: `Bearer ${token}` } }
       );

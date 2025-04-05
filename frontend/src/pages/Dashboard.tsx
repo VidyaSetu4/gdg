@@ -127,8 +127,8 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsAuthenticated }) => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
         <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
-          <Calendar size={18} className="text-primary" />
-          <span className="text-gray-600">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          {/* <Calendar size={18} className="text-primary" />
+          <span className="text-gray-600">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span> */}
           <button
             onClick={handleLogout}
             className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition"

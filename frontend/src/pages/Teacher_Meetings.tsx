@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Video, Calendar, Clock, User } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Loader,
+  ExternalLink,
+  Video,
+  Play,
+  Plus,
+} from "lucide-react";
 import axios from "axios";
 import API_BASE_URL from "../../config";
 
 interface ClassItem {
-  id: number;
-  title: string;
+  id: string;
+  summary: string;
   startTime: string;
-  endTime: string;
+  endTime?: string;
+  duration?: number;
   hostName: string;
   meetLink: string;
+  isRecorded?: boolean;
 }
 
 interface FormData {
@@ -20,6 +30,7 @@ interface FormData {
 }
 
 const TeacherOnlineClasses = () => {
+  const [activeTab, setActiveTab] = useState<"upcoming" | "recorded">("upcoming");
   const [classes, setClasses] = useState<ClassItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<FormData>({
@@ -30,34 +41,28 @@ const TeacherOnlineClasses = () => {
   });
   const [meetLink, setMeetLink] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMeetings = async () => {
+    const fetchClasses = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("Authorization token is missing. Please log in again.");
-          return;
-        }
-
-        const response = await axios.get<ClassItem[]>(
-          `${API_BASE_URL}/api/meet/meetings`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setClasses(response.data);
-      } catch (error) {
-        setError("Failed to fetch meetings. Please try again.");
-        console.error(error);
+        const res = await axios.get(`${API_BASE_URL}/api/meet/meetings`);
+        setClasses(res.data);
+      } catch (err: any) {
+        setError("Failed to fetch classes.");
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchMeetings();
+    fetchClasses();
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -81,11 +86,19 @@ const TeacherOnlineClasses = () => {
         { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
       );
 
+      const newClass: ClassItem = {
+        id: (classes.length + 1).toString(),
+        summary: title,
+        startTime,
+        endTime,
+        duration: parseInt(duration),
+        hostName: response.data.hostName,
+        meetLink: response.data.meetLink,
+        isRecorded: false,
+      };
+
+      setClasses([...classes, newClass]);
       setMeetLink(response.data.meetLink);
-      setClasses([
-        ...classes,
-        { id: classes.length + 1, title, startTime, endTime, hostName: response.data.hostName, meetLink: response.data.meetLink },
-      ]);
       setShowForm(false);
       setFormData({ title: "", date: "", time: "", duration: "" });
     } catch (error) {
@@ -94,32 +107,80 @@ const TeacherOnlineClasses = () => {
     }
   };
 
-  const formatDateTime = (isoString: string) => {
-    return new Date(isoString).toLocaleString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+  const formatDateTime = (isoString: string): { date: string; time: string } => {
+    const dateObj = new Date(isoString);
+    return {
+      date: dateObj.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+      time: dateObj.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }),
+    };
   };
 
+  const filteredClasses = classes.filter((item) =>
+    activeTab === "upcoming" ? !item.isRecorded : item.isRecorded
+  );
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Online Classes</h1>
+    <div className="w-full mx-auto px-4 py-8 space-y-8">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-800 bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+          Manage Online Classes
+        </h1>
         <button
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700"
+          className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-blue-700 text-white font-medium rounded-lg shadow"
           onClick={() => setShowForm(!showForm)}
         >
-          Schedule New Class
+          <Plus size={18} />
+          <span>Create Class</span>
         </button>
       </div>
 
+      {/* Tabs */}
+      <div className="flex border-b border-gray-200">
+        <button
+          className={`py-3 px-6 font-medium transition-all duration-200 ease-in-out relative ${
+            activeTab === "upcoming" ? "text-primary" : "text-gray-500 hover:text-gray-800"
+          }`}
+          onClick={() => setActiveTab("upcoming")}
+        >
+          <div className="flex items-center gap-2">
+            <Calendar size={16} />
+            <span>Upcoming</span>
+          </div>
+          {activeTab === "upcoming" && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-lg"></div>
+          )}
+        </button>
+        <button
+          className={`py-3 px-6 font-medium transition-all duration-200 ease-in-out relative ${
+            activeTab === "recorded" ? "text-primary" : "text-gray-500 hover:text-gray-800"
+          }`}
+          onClick={() => setActiveTab("recorded")}
+        >
+          <div className="flex items-center gap-2">
+            <Play size={16} />
+            <span>Recorded</span>
+          </div>
+          {activeTab === "recorded" && (
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-lg"></div>
+          )}
+        </button>
+      </div>
+
+      {/* Form */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 mb-6"
+        >
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Title</label>
             <input
@@ -164,7 +225,10 @@ const TeacherOnlineClasses = () => {
               required
             />
           </div>
-          <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700">
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+          >
             Create Meet Link
           </button>
         </form>
@@ -172,40 +236,73 @@ const TeacherOnlineClasses = () => {
 
       {error && <div className="bg-red-100 p-4 rounded-lg text-red-800 mb-6">{error}</div>}
 
-      {meetLink && (
-        <div className="bg-green-100 p-4 rounded-lg text-green-800 mb-6">
-          Google Meet Link:{" "}
-          <a href={meetLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
-            {meetLink}
-          </a>
+      {/* Loader */}
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-12">
+          <Loader size={36} className="text-primary animate-spin mb-4" />
+          <p className="text-gray-600 font-medium">Loading classes...</p>
         </div>
-      )}
-
-      <div className="grid gap-6">
-        {classes.map((classItem) => (
-          <div key={classItem.id} className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-            <h3 className="text-xl font-semibold mb-2">{classItem.title}</h3>
-            <div className="text-gray-600 space-y-2">
-              <div className="flex items-center">
-                <User size={16} className="mr-2" />
-                <span className="font-medium">Host:</span> {classItem.hostName}
-              </div>
-              <div className="flex items-center">
-                <Calendar size={16} className="mr-2" />
-                <span className="font-medium">Start:</span> {formatDateTime(classItem.startTime)}
-              </div>
-              <div className="flex items-center">
-                <Clock size={16} className="mr-2" />
-                <span className="font-medium">End:</span> {formatDateTime(classItem.endTime)}
+      ) : filteredClasses.length > 0 ? (
+        filteredClasses.map((classItem) => {
+          const { date, time } = formatDateTime(classItem.startTime);
+          return (
+            <div
+              key={classItem.id}
+              className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex-1 space-y-3">
+                  <div className="inline-flex items-center gap-1 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium">
+                    <Calendar size={14} className="text-blue-500" />
+                    <span>{date}</span>
+                  </div>
+                  <div className="inline-flex flex-wrap items-center gap-4 text-sm text-gray-600 ml-3">
+                    <div className="flex items-center gap-1">
+                      <Clock size={16} className="text-gray-400" />
+                      <span>{time}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
+                      <span>{classItem.duration} minutes</span>
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-800">{classItem.summary}</h3>
+                  
+                  <div className="text-gray-700">
+                    Hosted by 
+                    <span className="font-medium text-gray-900"> {classItem.hostName}</span>
+                  </div>
+                </div>
+                <a
+                  href={classItem.meetLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-medium px-6 py-3 rounded-lg transition-colors duration-200 shadow-sm hover:shadow whitespace-nowrap"
+                >
+                  {activeTab === "upcoming" ? (
+                    <>
+                      <Video size={18} />
+                      <span>Join Class</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play size={18} />
+                      <span>Watch Recording</span>
+                    </>
+                  )}
+                  <ExternalLink size={14} />
+                </a>
               </div>
             </div>
-            <a href={classItem.meetLink} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-              <Video size={16} className="mr-2" />
-              Join Class
-            </a>
-          </div>
-        ))}
-      </div>
+          );
+        })
+      ) : (
+        <div className="bg-gray-50 rounded-xl p-12 text-center text-gray-600 font-medium">
+          {activeTab === "upcoming"
+            ? "No upcoming classes scheduled yet."
+            : "No recorded classes available."}
+        </div>
+      )}
     </div>
   );
 };

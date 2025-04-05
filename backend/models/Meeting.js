@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 const meetingSchema = new Schema({
+    summary:{type:String, required:true},
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
     duration: { type: Number, required: true },
