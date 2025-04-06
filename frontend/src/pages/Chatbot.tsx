@@ -196,7 +196,7 @@ const Chatbot = () => {
 const fetchGeminiResponse = async (userInput: string, imageData: string | null, audioBlob: Blob | null) => {
   try {
     const requestData: any = {
-      contents: [{ parts: [] }]
+      contents: [{ parts: [{ text: "If the question is not related to the studies...respond with ask only study related questions in a gentle manner." }] }]
     };
 
     // Add text input if available

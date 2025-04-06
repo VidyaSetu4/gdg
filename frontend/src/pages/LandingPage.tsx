@@ -46,7 +46,7 @@ function App() {
   };
 
   return (
-      <div className=" bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
         {/* Hero Section */}
           <header className="bg-white/90 backdrop-blur-sm fixed w-full z-50 shadow-lg border-b border-gray-200">
           <div className="container mx-auto px-6 py-4">
@@ -103,19 +103,20 @@ function App() {
         </header>
         <main>
         {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 relative h-full">
-        <div className="absolute inset-0 z-0 h-full">
-          <img
+        {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 relative">
+        <div className="absolute inset-0 z-0">
+          <img 
             src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=2070&q=80"
             alt="Education Background"
-            className="w-full h-full object-cover opacity-60"
+            className="w-full h-full object-cover opacity-10"
           />
         </div>
-        <div className="container mx-auto text-center relative z-10 mt-40 h-96">
-          <h1 className="text-5xl md:text-6xl font-bold text-black-900 mb-6 ">
+        <div className="container mx-auto text-center relative z-10">
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
             Building Bridges to Education
           </h1>
-          <p className="text-xl text-black-900 font-600 max-w-3xl mx-auto mb-12">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
             VidyaSetu, meaning "Bridge of Knowledge," connects underserved communities with quality education through innovative technology. 
             We're breaking down barriers and creating pathways to learning for everyone, everywhere.
           </p>
