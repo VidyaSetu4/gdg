@@ -10,6 +10,7 @@ import {
   Home,
   MessageSquare // Added the MessageSquare icon for feedback
 } from 'lucide-react';
+import Image from '../assets/image.png'; // Import the image from the assets folder
 
 interface TeacherSidebarProps {
   activePage: string;
@@ -27,8 +28,8 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ activePage, setActivePa
     { id: 'tests', label: 'Tests', icon: <ClipboardList size={20} />, path: '/tests' },
     { id: 'progress', label: 'Analytics', icon: <BarChart2 size={20} />, path: '/progress' },
     { id: 'feedback', label: 'Feedback', icon: <MessageSquare size={20} />, path: '/feedback' }, // New Feedback item
-    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' },
   ];
+  const profileItem = { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' };
 
   return (
     <div className="h-full bg-indigo-700 text-white p-4 flex flex-col">
@@ -59,19 +60,23 @@ const TeacherSidebar: React.FC<TeacherSidebarProps> = ({ activePage, setActivePa
           ))}
         </ul>
       </nav>
-
+      {/* Profile at bottom */}
       <div className="mt-auto pt-4 border-t border-white/20">
-        <div className="flex items-center gap-3 p-2">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-            <User size={20} />
-          </div>
-          <div>
-            <p className="font-medium">Teacher Name</p>
-            <p className="text-sm text-white/70">Subject Expert</p>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            setActivePage(profileItem.id);
+            navigate(profileItem.path);
+          }}
+          className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
+            activePage === profileItem.id ? 'bg-white/20 font-medium' : 'hover:bg-white/10'
+          }`}
+        >
+          {profileItem.icon}
+          <span>{profileItem.label}</span>
+        </button>
       </div>
-    </div>
+
+      </div>
   );
 };
 

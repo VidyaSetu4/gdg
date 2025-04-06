@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import API_BASE_URL from '../../config';
 const TeacherSignup = () => {
   const navigate = useNavigate();
   
@@ -118,13 +118,33 @@ const TeacherSignup = () => {
     setMessage(null);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMessage("✅ Signup successful!");
-      setTimeout(() => navigate('/login'), 2000);
+      const response = await fetch(`${API_BASE_URL}/api/teacher/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: nameRef.current?.value,
+          email: emailRef.current?.value,
+          phone: phoneRef.current?.value,
+          address: addressRef.current?.value,
+          dob: dobRef.current?.value,
+          school: schoolRef.current?.value,
+          subjectSpeciality: subjectSpecialityRef.current?.value,
+          profilePic,
+          certificates,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        setMessage("✅ Signup successful!");
+        setTimeout(() => navigate("/login"), 2000);
+      } else {
+        setMessage(`❌ Error: ${result.message || "Failed to sign up"}`);
+      }
     } catch (error) {
       setMessage("❌ Failed to connect to server.");
-      setTimeout(() => setMessage(null), 3000);
     } finally {
       setLoading(false);
     }

@@ -30,6 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
     { id: 'feedback', label: 'Feedback', icon: <MessageSquare size={20} />, path: '/feedback' }, // New Feedback item
     { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' },
   ];
+  const profileItem = { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' };
 
   return (
     <div className="h-full bg-primary text-white p-4 flex flex-col">
@@ -47,11 +48,10 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
                   setActivePage(item.id);
                   navigate(item.path);
                 }}
-                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${
-                  activePage === item.id
+                className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${activePage === item.id
                     ? 'bg-white/20 font-medium'
                     : 'hover:bg-white/10'
-                }`}
+                  }`}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -60,18 +60,21 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
           ))}
         </ul>
       </nav>
-
+      {/* Profile at bottom */}
       <div className="mt-auto pt-4 border-t border-white/20">
-        <div className="flex items-center gap-3 p-2">
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-            <User size={20} />
-          </div>
-          <div>
-            <p className="font-medium">Student Name</p>
-            <p className="text-sm text-white/70">Class 10</p>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            setActivePage(profileItem.id);
+            navigate(profileItem.path);
+          }}
+          className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors ${activePage === profileItem.id ? 'bg-white/20 font-medium' : 'hover:bg-white/10'
+            }`}
+        >
+          {profileItem.icon}
+          <span>{profileItem.label}</span>
+        </button>
       </div>
+
     </div>
   );
 };
