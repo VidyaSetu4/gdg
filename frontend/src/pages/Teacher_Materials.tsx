@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import API_BASE_URL from "../../config";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { auth, storage } from "../../src/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
-// Define course structure
 interface Course {
   _id: string;
   name: string;
@@ -19,7 +21,6 @@ const TeacherUpload = () => {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  // Fetch teacher's courses
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -67,51 +68,71 @@ const TeacherUpload = () => {
     }
   };
 
-  // Handle upload
-  const handleUpload = async () => {
-    if (!selectedCourse || !file) {
-      setErrorMessage("Please select both a course and a file.");
+  const handleUpload = () => {
+    if (!file || !selectedCourse) {
+      setErrorMessage("Please select a course and choose a file.");
       return;
     }
 
-    setErrorMessage("");
-    setUploadSuccess(false);
     setIsLoading(true);
+    setUploadSuccess(false);
+    setErrorMessage("");
 
-    const formData = new FormData();
-    formData.append("courseId", selectedCourse);
-    formData.append("file", file);
-
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setErrorMessage("Session expired. Please log in again.");
-        setIsLoading(false);
-        return;
-      }
-
-      await axios.post(`${API_BASE_URL}/api/course/upload`, formData, {
-        headers: {
-          Authorization: token,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setUploadSuccess(true);
-      setFile(null);
-      setSelectedCourse("");
-      
-      // Hide success message after 5 seconds
-      setTimeout(() => {
-        setUploadSuccess(false);
-      }, 5000);
-      
-    } catch (error) {
-      console.error("Upload failed:", error);
-      setErrorMessage("Upload failed. Please try again.");
-    } finally {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setErrorMessage("No authentication token found.");
       setIsLoading(false);
+      return;
     }
+
+    const storageRef = ref(storage, `notes/${selectedCourse}/${Date.now()}-${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Optional: progress tracking
+      },
+      (error) => {
+        console.error("Firebase upload error:", error);
+        setErrorMessage("Failed to upload file.");
+        setIsLoading(false);
+      },
+      async () => {
+        try {
+          const fileUrl = await getDownloadURL(uploadTask.snapshot.ref);
+          const fileName = file.name;
+
+          await axios.post(
+            `http://localhost:8080/api/course/upload`,
+            {
+              courseId: selectedCourse,
+              fileUrl,
+              fileName,
+            },
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+
+          setUploadSuccess(true);
+          setFile(null);
+          setSelectedCourse("");
+          
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            setUploadSuccess(false);
+          }, 5000);
+        } catch (error) {
+          console.error("Metadata upload error:", error);
+          setErrorMessage("Failed to save file metadata.");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    );
   };
 
   const fileName = file ? file.name : "No file selected";
@@ -172,10 +193,10 @@ const TeacherUpload = () => {
         {/* Header */}
         <div className="bg-white rounded-t-2xl shadow-lg p-8 mb-1">
           <h2 className="text-3xl font-bold text-center text-indigo-700 mb-2">
-            Upload Course Materials
+            Upload Notes
           </h2>
           <p className="text-center text-gray-600 mb-0">
-            Share learning resources with your students
+            Share your study notes with your classmates
           </p>
         </div>
         
@@ -273,6 +294,7 @@ const TeacherUpload = () => {
                   id="file-upload"
                   type="file"
                   onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  accept=".pdf,.docx,.pptx,.txt"
                   className="hidden"
                 />
               </label>
@@ -326,14 +348,14 @@ const TeacherUpload = () => {
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
-                Upload Materials
+                Upload Notes
               </>
             )}
           </button>
           
           {/* Help Text */}
           <p className="mt-4 text-center text-xs text-gray-500">
-            Accepted file formats: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, JPG, PNG, MP4, MP3
+            Accepted file formats: PDF, DOCX, PPTX, TXT
           </p>
         </div>
       </div>

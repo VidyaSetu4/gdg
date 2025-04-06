@@ -81,13 +81,12 @@ router.post("/create", async (req, res) => {
 });
 
 //ROUTE FOR UPLOADING NOTES INTO A COURSE
-router.post("/upload", upload.single("file"), async (req, res) => {
+router.post("/upload", async (req, res) => {
   try {
-    const { courseId } = req.body;
-    const file = req.file;
+    const { courseId, fileUrl, fileName } = req.body;
+    const token = req.headers.authorization;
 
-    console.log("Request Body for uploadind notes: ", req.body);
-    const token = req.headers.authorization; // Get token from request headers
+    console.log("Request Body for uploading notes: ", req.body);
 
     if (!token) {
       return res.status(401).json({ error: "Unauthorized: No token provided" });
@@ -99,64 +98,51 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       return res.status(403).json({ error: "Invalid token" });
     }
 
-    const teacherId = new mongoose.Types.ObjectId(decoded.id); // Get the teacher's ID from the token
-
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    const teacherId = new mongoose.Types.ObjectId(decoded.id);
 
     // Validate courseId
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
       return res.status(400).json({ error: "Invalid Course ID" });
     }
 
-    // Find course and push the uploaded file
-    const course = await Course.findById(courseId);
+    // Validate required fields
+    if (!fileUrl || !fileName) {
+      return res.status(400).json({ error: "Missing fileUrl or fileName" });
+    }
+
+    // Find the course
+    const course = await Course.updateOne(
+      { _id: courseId },
+      {
+        $push: {
+          notes: {
+            teacherId,
+            fileUrl,
+            fileName,
+          },
+        },
+      }
+    );
     if (!course) {
-      return res.status(404).json({ error: "Course not found" });
+      return res.status(404).json({ error: "Course Notes not uploaded" });
     }
 
-    // **UPLOAD TO SUPABASE**
-    const { originalname, mimetype, buffer } = file;
-    const filePath = `uploads/${Date.now()}-${originalname}`; // Unique filename
+    // Push note metadata to the notes array
+    // course.notes.push({
+    //   teacherId,
+    //   fileUrl,
+    //   fileName,
+    // });
 
-    const { data, error } = await supabase.storage
-      .from("uploads")
-      .upload(filePath, buffer, { contentType: mimetype });
+    // await course.save();
 
-    if (error) {
-      console.error("Supabase Upload Error:", error);
-      return res.status(500).json({ error: "Failed to upload file to storage" });
-    }
-
-    // Get the public URL of the uploaded file
-    // **Fix: Ensure we correctly extract the public URL**
-    const publicUrl = supabase.storage.from("uploads").getPublicUrl(filePath);
-    if (!publicUrl || !publicUrl.data) {
-      console.error("Supabase URL Error:", publicUrl);
-      return res.status(500).json({ error: "Failed to retrieve public URL" });
-    }
-
-    // **Fix: Make sure `fileUrl` is assigned correctly**
-    const fileUrl = publicUrl.data.publicUrl;
-    console.log("Supabase File URL:", fileUrl); // Debugging
-
-    if (!fileUrl) {
-      return res.status(500).json({ error: "File URL is missing" });
-    }
-    // **STORE PUBLIC URL IN MONGODB**
-    course.notes.push({
-      teacherId,
-      fileName: originalname,
-      fileUrl, // Store public URL instead of local path
-    });
-
-    await course.save();
-
-    res.status(200).json({ message: "File uploaded successfully", url: publicUrl });
+    res.status(200).json({ message: "Note uploaded and metadata saved successfully" });
   } catch (error) {
-    console.error("Upload error:", error);
-    res.status(500).json({ error: "Upload failed" });
+    console.error("Error uploading note:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 //ROUTE TO FETCH NOTES UPLOADED BY TEACHER
 router.get("/notes", async (req, res) => {
