@@ -5,27 +5,26 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 import API_BASE_URL from '../../config';
-
+import Image from '../assets/image.png';
 // Reusable components
-const Badge = ({ children }) => (
+const Badge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
     {children}
   </span>
 );
 
-const Card = ({ children, className = "" }) => (
+const Card: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className = "" }) => (
   <div className={`bg-white rounded-xl shadow-sm overflow-hidden ${className}`}>
     {children}
   </div>
 );
 
-const TabButton = ({ label, active, icon, onClick }) => (
+const TabButton: React.FC<{ label: string; active: boolean; icon: React.ReactNode; onClick: () => void }> = ({ label, active, icon, onClick }) => (
   <button
-    className={`flex items-center gap-2 py-3 px-4 font-medium transition-all duration-200 ${
-      active 
-        ? 'text-primary border-b-2 border-primary' 
+    className={`flex items-center gap-2 py-3 px-4 font-medium transition-all duration-200 ${active
+        ? 'text-primary border-b-2 border-primary'
         : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
-    }`}
+      }`}
     onClick={onClick}
   >
     {icon}
@@ -33,7 +32,7 @@ const TabButton = ({ label, active, icon, onClick }) => (
   </button>
 );
 
-const InfoRow = ({ label, icon, value }) => (
+const InfoRow: React.FC<{ label: string; icon: React.ReactNode; value: string | null }> = ({ label, icon, value }) => (
   <div className="group p-3 rounded-lg hover:bg-gray-50 transition-colors">
     <h3 className="text-sm font-medium text-gray-500 mb-1">{label}</h3>
     <div className="flex items-center gap-2">
@@ -43,14 +42,21 @@ const InfoRow = ({ label, icon, value }) => (
   </div>
 );
 
-const EmptyState = ({ icon, message }) => (
+const EmptyState: React.FC<{ icon: React.ReactNode; message: string }> = ({ icon, message }) => (
   <div className="flex flex-col items-center justify-center p-8 text-center">
     <div className="p-3 bg-gray-100 rounded-full mb-3">{icon}</div>
     <p className="text-gray-500">{message}</p>
   </div>
 );
 
-const CourseCard = ({ course }) => (
+interface Course {
+  name: string;
+  description: string;
+  status?: string;
+  progress?: number;
+}
+
+const CourseCard: React.FC<{ course: Course }> = ({ course }) => (
   <div className="p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
     <div className="flex items-start justify-between">
       <div>
@@ -61,8 +67,8 @@ const CourseCard = ({ course }) => (
     </div>
     <div className="mt-4">
       <div className="w-full bg-gray-100 rounded-full h-2">
-        <div 
-          className="bg-primary h-2 rounded-full" 
+        <div
+          className="bg-primary h-2 rounded-full"
           style={{ width: `${course.progress || 0}%` }}
         />
       </div>
@@ -74,33 +80,6 @@ const CourseCard = ({ course }) => (
   </div>
 );
 
-const CertificateCard = ({ cert }) => (
-  <div className="p-4 border border-gray-100 rounded-lg hover:shadow-md transition-shadow">
-    <div className="flex justify-between">
-      <div>
-        <h3 className="font-medium text-gray-800">{cert.title}</h3>
-        <p className="text-sm text-gray-600 mt-1">{cert.description}</p>
-        <div className="mt-3">
-          <a
-            href={cert.downloadUrl}
-            className="inline-flex items-center gap-1 text-sm text-primary hover:underline font-medium"
-            target="_blank" rel="noreferrer"
-          >
-            View Certificate
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"></path>
-              <path d="M15 3h6v6"></path>
-              <path d="M10 14L21 3"></path>
-            </svg>
-          </a>
-        </div>
-      </div>
-      <div className="flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full">
-        <Award size={20} className="text-primary" />
-      </div>
-    </div>
-  </div>
-);
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('personal');
@@ -117,7 +96,6 @@ const Profile = () => {
   });
 
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -125,7 +103,7 @@ const Profile = () => {
     const fetchStudentData = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/auth/profile`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") }
         });
 
         const student = response.data.student;
@@ -147,11 +125,11 @@ const Profile = () => {
           grade: '10th Standard',
           school: student.school,
           joinDate: formattedJoinDate,
-          profileImage: student.profilePicture || '/default-profile.jpg'
+          profileImage: student.profilePicture || Image
         });
 
         if (student.enrolledCourses?.length > 0) {
-          const coursesResponse = await axios.get(`${API_BASE_URL}/api/student/courses`);
+          const coursesResponse = await axios.get(`${API_BASE_URL}/api/auth/courses`);
           setEnrolledCourses(coursesResponse.data.map(course => ({
             ...course,
             progress: Math.floor(Math.random() * 100) // Simulated progress (replace with actual data)
@@ -159,7 +137,7 @@ const Profile = () => {
         }
 
         if (student.certificates?.length > 0) {
-          const certsResponse = await axios.get(`${API_BASE_URL}/api/student/certificates`);
+          const certsResponse = await axios.get(`${API_BASE_URL}/api/auth/certificates`);
           setCertificates(certsResponse.data);
         }
 
@@ -198,30 +176,28 @@ const Profile = () => {
       </div>
     );
   }
+  const handleLogout = async () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("users");
+    window.location.href = "/"; // Redirect to login page
+  };
+  
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">My Profile</h1>
         <button className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors">
-          <LogOut size={18} />
+          <LogOut size={18} onClick={handleLogout} />
           <span>Sign Out</span>
         </button>
       </div>
 
       {/* Profile Header */}
       <Card>
-        <div className="h-40 bg-gradient-to-r from-primary/90 to-primary/70 relative overflow-hidden">
+        <div className="h-40 bg-gradient-to-r bg-blue-600 relative overflow-hidden">
           <div className="absolute inset-0 opacity-20">
-            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <pattern id="pattern" patternUnits="userSpaceOnUse" width="50" height="50" patternTransform="rotate(45)">
-                  <rect width="100%" height="100%" fill="none"/>
-                  <circle cx="25" cy="25" r="3" fill="white" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#pattern)" />
-            </svg>
+
           </div>
         </div>
         <div className="px-6 pb-6">
@@ -247,7 +223,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="flex gap-2 mt-4 md:mt-0">
-              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-primary/90 transition-colors">
+              <button className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow-sm hover:bg-blue-700 transition-colors">
                 <Edit size={16} />
                 <span>Edit Profile</span>
               </button>
@@ -261,24 +237,19 @@ const Profile = () => {
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200 bg-white rounded-t-lg">
-        <TabButton 
-          label="Personal Information" 
-          active={activeTab === 'personal'} 
-          icon={<User size={18} />} 
-          onClick={() => setActiveTab('personal')} 
+        <TabButton
+          label="Personal Information"
+          active={activeTab === 'personal'}
+          icon={<User size={18} />}
+          onClick={() => setActiveTab('personal')}
         />
-        <TabButton 
-          label="Enrolled Courses" 
-          active={activeTab === 'courses'} 
-          icon={<BookOpenCheck size={18} />} 
-          onClick={() => setActiveTab('courses')} 
+        <TabButton
+          label="Enrolled Courses"
+          active={activeTab === 'courses'}
+          icon={<BookOpenCheck size={18} />}
+          onClick={() => setActiveTab('courses')}
         />
-        <TabButton 
-          label="Certificates" 
-          active={activeTab === 'certificates'} 
-          icon={<GraduationCap size={18} />} 
-          onClick={() => setActiveTab('certificates')} 
-        />
+
       </div>
 
       {/* Personal Info */}
@@ -306,12 +277,12 @@ const Profile = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="mt-8 pt-6 border-t border-gray-100">
             <h3 className="text-lg font-medium text-gray-800 mb-4">Additional Information</h3>
             <div className="bg-gray-50 p-4 rounded-lg">
               <p className="text-gray-600 text-sm">
-                Your profile information helps us provide personalized learning recommendations and 
+                Your profile information helps us provide personalized learning recommendations and
                 keeps your account secure. You can update your information anytime through the Edit Profile button.
               </p>
             </div>
@@ -329,7 +300,7 @@ const Profile = () => {
             </div>
             <Badge>{enrolledCourses.length} Courses</Badge>
           </div>
-          
+
           {enrolledCourses.length > 0 ? (
             <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
               {enrolledCourses.map(course => (
@@ -337,7 +308,7 @@ const Profile = () => {
               ))}
             </div>
           ) : (
-            <EmptyState 
+            <EmptyState
               icon={<BookOpen size={24} className="text-gray-400" />}
               message="You haven't enrolled in any courses yet."
             />
@@ -355,7 +326,7 @@ const Profile = () => {
             </div>
             <Badge>{certificates.length} Certificates</Badge>
           </div>
-          
+
           {certificates.length > 0 ? (
             <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
               {certificates.map(cert => (
@@ -363,7 +334,7 @@ const Profile = () => {
               ))}
             </div>
           ) : (
-            <EmptyState 
+            <EmptyState
               icon={<Award size={24} className="text-gray-400" />}
               message="Complete courses to earn certificates."
             />

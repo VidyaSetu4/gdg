@@ -241,6 +241,7 @@ router.get("/student/available-tests", async (req, res) => {
 
             return {
                 _id: saq._id,
+                username:decoded.name,
                 title: saq.title,
                 course: {
                     _id: saq.course._id,
@@ -365,6 +366,7 @@ router.get("/teacher/tests", async (req, res) => {
       }
   
       const formattedSubmissions = submissions.map((sub) => ({
+        username: decoded.name,
         saqId: sub.saq._id,
         title: sub.saq.title,
         course: {

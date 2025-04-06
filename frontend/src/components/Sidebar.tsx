@@ -27,8 +27,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, setActivePage }) => {
     { id: 'chatbot', label: 'Chatbot', icon: <MessageSquare size={20} />, path: '/chatbot' },
     { id: 'tests', label: 'Tests', icon: <ClipboardList size={20} />, path: '/tests' },
     { id: 'progress', label: 'Progress', icon: <BarChart2 size={20} />, path: '/progress' },
-    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' },
     { id: 'feedback', label: 'Feedback', icon: <MessageSquare size={20} />, path: '/feedback' }, // New Feedback item
+    { id: 'profile', label: 'Profile', icon: <User size={20} />, path: '/profile' },
   ];
 
   return (

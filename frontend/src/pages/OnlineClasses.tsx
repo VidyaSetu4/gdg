@@ -30,9 +30,14 @@ const OnlineClasses: React.FC = () => {
 
         const data = await response.json();
         console.log("Fetched Meetings:", data);
-
-        setUpcomingClasses(data || []);
-        setRecordedClasses(data || []);
+        const sortedData = (data || []).sort(
+          (a: ClassItem, b: ClassItem) =>
+            new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        );
+        
+        setUpcomingClasses(sortedData|| []);
+        setRecordedClasses(sortedData|| []);
+        
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);

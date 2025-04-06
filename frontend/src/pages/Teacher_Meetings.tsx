@@ -47,7 +47,7 @@ const TeacherOnlineClasses = () => {
     const fetchClasses = async () => {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/meet/meetings`);
-        setClasses(res.data);
+        setClasses(res.data.reverse());
       } catch (err: any) {
         setError("Failed to fetch classes.");
       } finally {

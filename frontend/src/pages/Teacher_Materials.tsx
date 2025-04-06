@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import API_BASE_URL from "../../config";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { auth, storage } from "../../src/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-
+import API_BASE_URL from "../../config";
 interface Course {
   _id: string;
   name: string;
@@ -104,7 +103,7 @@ const TeacherUpload = () => {
           const fileName = file.name;
 
           await axios.post(
-            `http://localhost:8080/api/course/upload`,
+            `${API_BASE_URL}/api/course/upload`,
             {
               courseId: selectedCourse,
               fileUrl,

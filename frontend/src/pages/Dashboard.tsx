@@ -23,6 +23,7 @@ interface DashboardProps {
 }
 
 interface Submission {
+  username:string;
   saqId: string;
   title: string;
   course: {
@@ -47,7 +48,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsAuthenticated }) => {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-
+  const [username, setUsername] = useState<string>("");
   const upcomingClasses = [
     { id: 1, subject: 'Mathematics', topic: 'Algebra Basics', time: '10:00 AM', date: 'Today', teacher: 'Dr. Sharma' },
     { id: 2, subject: 'Science', topic: 'Cell Structure', time: '2:00 PM', date: 'Today', teacher: 'Mrs. Gupta' },
@@ -73,7 +74,6 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsAuthenticated }) => {
           `${API_BASE_URL}/api/saq/student/submissions`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
         // Calculate percentage earned for each submission
         const processedSubmissions = response.data.submissions.map(sub => {
           const questionCount = sub.answers.length;
@@ -125,7 +125,7 @@ const Dashboard: React.FC<DashboardProps> = ({ setIsAuthenticated }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Dashboard {username}</h1>
         <div className="flex items-center gap-2 bg-white p-2 rounded-lg shadow-sm">
           {/* <Calendar size={18} className="text-primary" />
           <span className="text-gray-600">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span> */}
