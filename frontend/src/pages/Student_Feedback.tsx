@@ -12,17 +12,24 @@ const Student_Feedback = () => {
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(localStorage.getItem("hasSubmitted") === "true");
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/feedback/latest`)
+    const token = localStorage.getItem("token"); // Or however you're storing JWT
+
+    fetch(`${API_BASE_URL}/api/feedback/latest`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (data?.formLink) {
-          setFeedbackForms([data]); // ✅ Wrap object in an array
+          setFeedbackForms([data]);
         } else {
-          setFeedbackForms([]); // ✅ Ensure it's an empty array if no form exists
+          setFeedbackForms([]);
         }
       })
       .catch((err) => console.error("Error fetching feedback:", err));
   }, []);
+
 
   const handleSubmit = () => {
     setHasSubmitted(true);
@@ -59,9 +66,8 @@ const Student_Feedback = () => {
                   href={feedback.formLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md transition duration-200 ${
-                    hasSubmitted ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
-                  }`}
+                  className={`bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md transition duration-200 ${hasSubmitted ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+                    }`}
                   onClick={(e) => hasSubmitted && e.preventDefault()}
                 >
                   Fill Feedback

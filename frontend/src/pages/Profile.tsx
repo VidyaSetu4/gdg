@@ -128,18 +128,18 @@ const Profile = () => {
           profileImage: student.profilePicture || Image
         });
 
-        if (student.enrolledCourses?.length > 0) {
-          const coursesResponse = await axios.get(`${API_BASE_URL}/api/auth/courses`);
-          setEnrolledCourses(coursesResponse.data.map(course => ({
-            ...course,
-            progress: Math.floor(Math.random() * 100) // Simulated progress (replace with actual data)
-          })));
-        }
+        // if (student.enrolledCourses?.length > 0) {
+        //   const coursesResponse = await axios.get(`${API_BASE_URL}/api/auth/courses`);
+        //   setEnrolledCourses(coursesResponse.data.map(course => ({
+        //     ...course,
+        //     progress: Math.floor(Math.random() * 100) // Simulated progress (replace with actual data)
+        //   })));
+        // }
 
-        if (student.certificates?.length > 0) {
-          const certsResponse = await axios.get(`${API_BASE_URL}/api/auth/certificates`);
-          setCertificates(certsResponse.data);
-        }
+        // if (student.certificates?.length > 0) {
+        //   const certsResponse = await axios.get(`${API_BASE_URL}/api/auth/certificates`);
+        //   setCertificates(certsResponse.data);
+        // }
 
         setLoading(false);
       } catch (err) {
