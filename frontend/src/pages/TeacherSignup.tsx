@@ -32,10 +32,11 @@ const TeacherSignup = () => {
   const subjectSpecialityRef = useRef<HTMLSelectElement>(null);
   const certFileRef = useRef<HTMLInputElement>(null);
 
-  const subjectSpecialities = [
-    'Mathematics', 'Science', 'Computer Science', 'English', 
-    'History', 'Physics', 'Chemistry', 'Biology', 
-    'Arts', 'Physical Education'
+  const subjectSpecialities = [  "Mathematics", 
+      "Science", 
+      "History", 
+      "Computer Science", 
+      "Art"
   ];
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
